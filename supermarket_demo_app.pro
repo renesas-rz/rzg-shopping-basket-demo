@@ -36,7 +36,7 @@ FORMS += \
 
 INCLUDEPATH += \
     $$(SDKTARGETSYSROOT)/usr/include/opencv4 \
-    $$(SDKTARGETSYSROOT)/usr/include/tensorflow/contrib/lite/downloads/flatbuffers/include
+    $$(SDKTARGETSYSROOT)/usr/include/tensorflow/lite/tools/make/downloads/flatbuffers/include
 
 LIBS += \
     -L $$(SDKTARGETSYSROOT)/usr/lib64 \

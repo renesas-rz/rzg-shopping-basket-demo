@@ -19,7 +19,7 @@
 #ifndef TFLITEWORKER_H
 #define TFLITEWORKER_H
 
-#include <tensorflow/contrib/lite/kernels/register.h>
+#include <tensorflow/lite/kernels/register.h>
 #include <QObject>
 #include <QVector>
 
