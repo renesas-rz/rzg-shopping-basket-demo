@@ -65,5 +65,6 @@ void opencvWorker::readFrame()
 
 void opencvWorker::disconnectWebcam()
 {
-    videoCapture->release();
+    if (webcamInitialised == true)
+        videoCapture->release();
 }
