@@ -67,7 +67,8 @@ void tfliteWorker::receiveImage(const QImage& sentImage)
 
     startTime = std::chrono::high_resolution_clock::now();
 
-    swappedImage = sentImage.scaled(wantedHeight, wantedWidth, Qt::IgnoreAspectRatio, Qt::SmoothTransformation).rgbSwapped();
+    swappedImage = sentImage.scaled(wantedHeight, wantedWidth, Qt::IgnoreAspectRatio, \
+                                    Qt::SmoothTransformation).rgbSwapped();
     imageData = swappedImage.bits();
     imageDataIn.resize(unsigned(swappedImage.height() * swappedImage.width() * wantedChannels));
     swappedImageSize = unsigned(swappedImage.height() * swappedImage.width() * swappedImage.depth()) / BITS_TO_BYTE;
@@ -85,7 +86,8 @@ void tfliteWorker::receiveImage(const QImage& sentImage)
 
     tfliteInterpreter->Invoke();
 
-    for (int i = 0; tfliteInterpreter->typed_output_tensor<float>(2)[i] > float(DETECT_THRESHOLD); i++){
+    for (int i = 0; tfliteInterpreter->typed_output_tensor<float>(2)[i] > float(DETECT_THRESHOLD)\
+         && tfliteInterpreter->typed_output_tensor<float>(2)[i] <= float(1.0); i++){
         outputTensor.push_back(tfliteInterpreter->typed_output_tensor<float>(1)[i]);          //item
         outputTensor.push_back(tfliteInterpreter->typed_output_tensor<float>(2)[i]);          //confidence
         outputTensor.push_back(tfliteInterpreter->typed_output_tensor<float>(0)[i * 4]);      //box ymin
@@ -96,8 +98,7 @@ void tfliteWorker::receiveImage(const QImage& sentImage)
 
     stopTime = std::chrono::high_resolution_clock::now();
     timeElapsed = int(std::chrono::duration_cast<std::chrono::milliseconds>(stopTime - startTime).count());
-
-    emit sendOutputTensor(outputTensor, timeElapsed);
+    emit sendOutputTensor(outputTensor, timeElapsed, sentImage);
     outputTensor.clear();
 }
 

@@ -65,7 +65,7 @@ public slots:
 
 
 private slots:
-    void receiveOutputTensor (const QVector<float>& receivedTensor, int recievedTimeElapsed);
+    void receiveOutputTensor (const QVector<float>& receivedTensor, int recievedTimeElapsed, const QImage &receivedImage);
     void webcamInitStatus (bool webcamStatus);
     void on_pushButtonImage_clicked();
     void on_pushButtonRun_clicked();
@@ -73,7 +73,6 @@ private slots:
     void on_pushButtonStop_clicked();
     void on_pushButtonCapture_clicked();
     void on_pushButtonWebcam_clicked();
-    void on_checkBoxContinuous_stateChanged(int checkBoxState);
     void on_actionLicense_triggered();
     void on_actionReset_triggered();
     void webcamTimeout();
@@ -97,8 +96,6 @@ private:
     QStringList labelListSorted;
     QTimer *webcamTimer;
     QString webcamName;
-    bool continuousRunning;
-    bool stopClicked;
     static const QStringList labelList;
     static const std::vector<float> costs;
 };
