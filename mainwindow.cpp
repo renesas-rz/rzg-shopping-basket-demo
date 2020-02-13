@@ -125,7 +125,6 @@ void MainWindow::on_pushButtonImage_clicked()
         scene->clear();
         scene->addPixmap(image);
         scene->setSceneRect(image.rect());
-        on_pushButtonRun_clicked();
     }
 
     emit imageLoaded();
