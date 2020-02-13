@@ -18,6 +18,7 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QDir>
 
 #include "mainwindow.h"
 
@@ -25,11 +26,15 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QCommandLineParser parser;
-    QCommandLineOption cameraOption(QStringList() << "c" << "camera","Choose a camera","file");
+    QCommandLineOption cameraOption(QStringList() << "c" << "camera","Choose a camera.","file");
+    QString cameraLocation;
     parser.addOption(cameraOption);
     parser.process(a);
-    QString cameraLocation = parser.value(cameraOption);
-    MainWindow w(nullptr, cameraLocation);
+    cameraLocation = parser.value(cameraOption);
+
+    if (cameraLocation.isEmpty() && QDir("/dev/v4l/by-id").exists())
+        cameraLocation = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
+
     w.show();
     return a.exec();
 }

@@ -17,7 +17,6 @@
  *****************************************************************************************/
 
 #include <QImage>
-#include <QDir>
 
 #include "opencvworker.h"
 
@@ -25,12 +24,9 @@ void opencvWorker::initialiseWebcam(QString cameraLocation)
 {
     QString gstreamerPipeline;
 
-    if (cameraLocation.isEmpty() && QDir("/dev/v4l/by-id").exists()) {
-        cameraLocation = QDir("/dev/v4l/by-id").entryInfoList(\
-                    QDir::NoDotAndDotDot).at(0).absoluteFilePath();
-    }
     if (webcamInitialised == true)
         videoCapture->release();
+
     if (!cameraLocation.isEmpty()) {
         gstreamerPipeline = "v4l2src device=" + QString(cameraLocation) + \
             " ! video/x-raw, width=" CAMERA_WIDTH ", height=" CAMERA_HEIGHT \
