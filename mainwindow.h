@@ -33,6 +33,8 @@
 #define BOX_WIDTH 2
 #define BOX_COLOUR Qt::green
 #define TEXT_COLOUR Qt::green
+#define X_TEXT_OFFSET 6
+#define Y_TEXT_OFFSET 18
 
 class QGraphicsScene;
 class QGraphicsView;

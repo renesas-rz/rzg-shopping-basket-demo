@@ -29,10 +29,10 @@
 #include "tfliteworker.h"
 #include "opencvworker.h"
 
-const QStringList MainWindow::labelList = {"baked-beans", "coke", "diet-coke", \
-                               "fusilli-pasta", "lindt-chocolate", \
-                               "mars", "penne-pasta", "pringles", \
-                               "redbull", "sweetcorn"};
+const QStringList MainWindow::labelList = {"Baked Beans", "Coke", "Diet Coke", \
+                               "Fusilli Pasta", "Lindt Chocolate", \
+                               "Mars", "Penne Pasta", "Pringles", \
+                               "Redbull", "Sweetcorn"};
 
 const std::vector<float> MainWindow::costs = {float(0.85), float(0.82), \
                                               float(0.79), float(0.89), \
@@ -265,6 +265,7 @@ void MainWindow::drawBoxes()
     for (int i = 0; (i + 5) < outputTensor.size(); i += 6) {
         QPen pen;
         QBrush brush;
+        QGraphicsTextItem* itemName = scene->addText(nullptr);
         pen.setColor(BOX_COLOUR);
         pen.setWidth(BOX_WIDTH);
         float ymin = outputTensor[i + 2] * float(scene->height());
@@ -273,10 +274,13 @@ void MainWindow::drawBoxes()
         float xmax = outputTensor[i + 5] * float(scene->width());
         float scorePercentage = outputTensor[i + 1] * 100;
 
-        QGraphicsTextItem* itemName = scene->addText(labelList[int(outputTensor[i])] + " " + \
-                                                 QString::number(double(scorePercentage), 'f', 1) + "%");
-        itemName->setPos(double(xmin), double(ymin));
+        itemName->setHtml(QString("<div style='background:rgba(0, 0, 0, 100%);'>" + \
+                                  QString(labelList[int(outputTensor[i])] + " " + \
+                                  QString::number(double(scorePercentage), 'f', 1) + "%") + \
+                                  QString("</div>")));
+        itemName->setPos(double(xmin - X_TEXT_OFFSET), double(ymin - Y_TEXT_OFFSET));
         itemName->setDefaultTextColor(TEXT_COLOUR);
+        itemName->setZValue(1);
 
         scene->addRect(double(xmin), double(ymin), double(xmax - xmin), double(ymax - ymin), pen, brush);
     }
