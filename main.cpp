@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;
     QCommandLineOption cameraOption(QStringList() << "c" << "camera","Choose a camera.","file");
     QString cameraLocation;
+    QString modelLocation;
     parser.addOption(cameraOption);
     parser.process(a);
     cameraLocation = parser.value(cameraOption);
@@ -35,6 +36,12 @@ int main(int argc, char *argv[])
     if (cameraLocation.isEmpty() && QDir("/dev/v4l/by-id").exists())
         cameraLocation = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
 
+    modelLocation = CPU_MODEL_NAME;
+    if (!QFile::exists(modelLocation))
+            qFatal("%s not found in the current directory", \
+                    modelLocation.toStdString().c_str());
+
+    MainWindow w(nullptr, cameraLocation, modelLocation);
     w.show();
     return a.exec();
 }

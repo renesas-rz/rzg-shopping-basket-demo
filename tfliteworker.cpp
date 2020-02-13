@@ -21,17 +21,20 @@
 
 #include "tfliteworker.h"
 
-tfliteWorker::tfliteWorker()
+tfliteWorker::tfliteWorker(QString modelLocation)
 {
     tflite::ops::builtin::BuiltinOpResolver tfliteResolver;
     TfLiteIntArray *wantedDimensions;
 
     numberOfInferenceThreads = 2;
 
-    tfliteModel = tflite::FlatBufferModel::BuildFromFile(MODEL_NAME);
+    tfliteModel = tflite::FlatBufferModel::BuildFromFile(modelLocation.toStdString().c_str());
     tflite::InterpreterBuilder(*tfliteModel, tfliteResolver) (&tfliteInterpreter);
 
-    tfliteInterpreter->AllocateTensors();
+    if (tfliteInterpreter->AllocateTensors() != kTfLiteOk) {
+        qFatal("Failed to allocate tensors!");
+    }
+
     tfliteInterpreter->SetProfiler(nullptr);
     tfliteInterpreter->SetNumThreads(numberOfInferenceThreads);
 

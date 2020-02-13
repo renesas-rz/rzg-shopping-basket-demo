@@ -21,6 +21,9 @@
 #include <QMainWindow>
 
 #define IMAGE_DIRECTORY "/opt/shopping-basket-demo/sample_images"
+
+#define CPU_MODEL_NAME "shoppingBasketDemo.tflite"
+
 #define IMAGE_WIDTH 800
 #define IMAGE_HEIGHT 600
 
@@ -44,7 +47,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent, QString cameraLocation);
+    MainWindow(QWidget *parent, QString cameraLocation, QString modelLocation);
 
 signals:
     void sendImage(const QImage&);

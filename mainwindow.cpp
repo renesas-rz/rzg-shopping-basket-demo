@@ -40,7 +40,7 @@ const std::vector<float> MainWindow::costs = {float(0.85), float(0.82), \
                                               float(0.89), float(0.85), \
                                               float(1.20), float(0.69)};
 
-MainWindow::MainWindow(QWidget *parent, QString cameraLocation)
+MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLocation)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation)
     tfliteThread = new QThread();
     tfliteThread->setObjectName("tfliteThread");
     tfliteThread->start();
-    tfWorker = new tfliteWorker();
+    tfWorker = new tfliteWorker(modelLocation);
     tfWorker->moveToThread(tfliteThread);
     connect(tfWorker, SIGNAL(requestImage()), this, SLOT(receiveRequest()));
     connect(this, SIGNAL(sendImage(const QImage&)), tfWorker, SLOT(receiveImage(const QImage&)));

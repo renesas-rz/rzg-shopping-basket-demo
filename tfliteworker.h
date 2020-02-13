@@ -23,8 +23,6 @@
 #include <QObject>
 #include <QVector>
 
-#define MODEL_NAME "/opt/shopping-basket-demo/shoppingBasketDemo.tflite"
-
 #define DETECT_THRESHOLD 0.5
 #define BITS_TO_BYTE 8
 
@@ -33,7 +31,7 @@ class tfliteWorker : public QObject
     Q_OBJECT
 
 public:
-    tfliteWorker();
+    tfliteWorker(QString modelLocation);
 
 signals:
     void sendOutputTensor(const QVector<float>&, int);
