@@ -1,5 +1,5 @@
 /*****************************************************************************************
- * Copyright (C) 2019 Renesas Electronics Corp.
+ * Copyright (C) 2021 Renesas Electronics Corp.
  * This file is part of the RZG Shopping Basket Demo.
  *
  * The RZG Shopping Basket Demo is free software using the Qt Open Source Model: you can redistribute it and/or modify
@@ -335,7 +335,7 @@ void MainWindow::webcamInitStatus(bool webcamStatus)
 void MainWindow::on_actionLicense_triggered()
 {
     QMessageBox::information(this, "License",
-                             "Copyright (C) 2019 Renesas Electronics Corp.\n\n"
+                             "Copyright (C) 2021 Renesas Electronics Corp.\n\n"
                              "The RZG Shopping Basket Demo is free software using the Qt Open Source Model: "
                              "you can redistribute it and/or modify "
                              "it under the terms of the GNU General Public License as published by "

@@ -1,5 +1,5 @@
 /*****************************************************************************************
- * Copyright (C) 2019 Renesas Electronics Corp.
+ * Copyright (C) 2021 Renesas Electronics Corp.
  * This file is part of the RZG Shopping Basket Demo.
  *
  * The RZG Shopping Basket Demo is free software using the Qt Open Source Model: you can redistribute it and/or modify
