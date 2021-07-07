@@ -70,12 +70,13 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     opencvThread->start();
     cvWorker = new opencvWorker();
     cvWorker->moveToThread(opencvThread);
+
     connect(ui->pushButtonWebcam, SIGNAL(toggled(bool)), this,
             SLOT(pushButtonWebcamCheck(bool)));
     connect(cvWorker, SIGNAL(sendImage(const QImage&)), this, SLOT(showImage(const QImage&)));
     connect(cvWorker, SIGNAL(webcamInit(bool)), this, SLOT(webcamInitStatus(bool)));
 
-    QMetaObject::invokeMethod(cvWorker, "initialiseWebcam", Qt::AutoConnection, Q_ARG(QString,webcamName));
+    QMetaObject::invokeMethod(cvWorker, "initialiseWebcam", Qt::AutoConnection, Q_ARG(QString, webcamName));
 
     qRegisterMetaType<QVector<float> >("QVector<float>");
     tfliteThread = new QThread();
@@ -83,6 +84,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     tfliteThread->start();
     tfWorker = new tfliteWorker(modelLocation);
     tfWorker->moveToThread(tfliteThread);
+
     connect(tfWorker, SIGNAL(requestImage()), this, SLOT(receiveRequest()));
     connect(this, SIGNAL(sendImage(const QImage&)), tfWorker, SLOT(receiveImage(const QImage&)));
     connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const QImage&)),
@@ -112,9 +114,9 @@ void MainWindow::on_pushButtonImage_clicked()
     dialog.setDirectory(IMAGE_DIRECTORY);
 
     imageFilter = "Images (";
-    for (int i = 0; i < QImageReader::supportedImageFormats().count(); i++) {
+    for (int i = 0; i < QImageReader::supportedImageFormats().count(); i++)
         imageFilter += "*." + QImageReader::supportedImageFormats().at(i) + " ";
-    }
+
     imageFilter +=")";
 
     dialog.setNameFilter(imageFilter);
@@ -130,6 +132,7 @@ void MainWindow::on_pushButtonImage_clicked()
         imageToSend.load(fileName);
         if (imageToSend.width() != IMAGE_WIDTH || imageToSend.height() != IMAGE_HEIGHT)
             imageToSend = imageToSend.scaled(IMAGE_WIDTH, IMAGE_HEIGHT);
+
         image = QPixmap::fromImage(imageToSend);
         scene->clear();
         scene->addPixmap(image);
@@ -189,7 +192,7 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
         ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
         ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1,
         new QTableWidgetItem("£" + QString::number(
-        double(costs[labelList.indexOf(labelListSorted.at(i))]), 'f', 2)));
+            double(costs[labelList.indexOf(labelListSorted.at(i))]), 'f', 2)));
     }
 
     ui->labelInferenceTime->setText(QString("%1 ms").arg(receivedTimeElapsed));

@@ -20,6 +20,7 @@
 #define TFLITEWORKER_H
 
 #include <tensorflow/lite/kernels/register.h>
+
 #include <QObject>
 #include <QVector>
 

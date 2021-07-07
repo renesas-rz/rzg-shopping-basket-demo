@@ -21,8 +21,10 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/videoio.hpp>
-#include <QObject>
+
 #include <memory>
+
+#include <QObject>
 
 #define CAMERA_WIDTH "1280"
 #define CAMERA_HEIGHT "1024"

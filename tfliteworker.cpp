@@ -17,6 +17,7 @@
  *****************************************************************************************/
 
 #include <QImage>
+
 #include <chrono>
 
 #include "tfliteworker.h"
@@ -31,9 +32,8 @@ tfliteWorker::tfliteWorker(QString modelLocation)
     tfliteModel = tflite::FlatBufferModel::BuildFromFile(modelLocation.toStdString().c_str());
     tflite::InterpreterBuilder(*tfliteModel, tfliteResolver) (&tfliteInterpreter);
 
-    if (tfliteInterpreter->AllocateTensors() != kTfLiteOk) {
+    if (tfliteInterpreter->AllocateTensors() != kTfLiteOk)
         qFatal("Failed to allocate tensors!");
-    }
 
     tfliteInterpreter->SetProfiler(nullptr);
     tfliteInterpreter->SetNumThreads(numberOfInferenceThreads);
@@ -87,7 +87,7 @@ void tfliteWorker::receiveImage(const QImage& sentImage)
     tfliteInterpreter->Invoke();
 
     for (int i = 0; tfliteInterpreter->typed_output_tensor<float>(2)[i] > float(DETECT_THRESHOLD)
-         && tfliteInterpreter->typed_output_tensor<float>(2)[i] <= float(1.0); i++){
+         && tfliteInterpreter->typed_output_tensor<float>(2)[i] <= float(1.0); i++) {
         outputTensor.push_back(tfliteInterpreter->typed_output_tensor<float>(1)[i]);          //item
         outputTensor.push_back(tfliteInterpreter->typed_output_tensor<float>(2)[i]);          //confidence
         outputTensor.push_back(tfliteInterpreter->typed_output_tensor<float>(0)[i * 4]);      //box ymin
