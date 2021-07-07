@@ -26,6 +26,7 @@
 
 #define DETECT_THRESHOLD 0.5
 #define BITS_TO_BYTE 8
+#define DEFAULT_NUM_THREADS 2
 
 class tfliteWorker : public QObject
 {

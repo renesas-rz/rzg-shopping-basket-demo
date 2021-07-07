@@ -27,7 +27,7 @@ tfliteWorker::tfliteWorker(QString modelLocation)
     tflite::ops::builtin::BuiltinOpResolver tfliteResolver;
     TfLiteIntArray *wantedDimensions;
 
-    numberOfInferenceThreads = 2;
+    numberOfInferenceThreads = DEFAULT_NUM_THREADS;
 
     tfliteModel = tflite::FlatBufferModel::BuildFromFile(modelLocation.toStdString().c_str());
     tflite::InterpreterBuilder(*tfliteModel, tfliteResolver) (&tfliteInterpreter);
