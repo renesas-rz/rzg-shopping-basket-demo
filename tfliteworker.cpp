@@ -67,7 +67,7 @@ void tfliteWorker::receiveImage(const QImage& sentImage)
 
     startTime = std::chrono::high_resolution_clock::now();
 
-    swappedImage = sentImage.scaled(wantedHeight, wantedWidth, Qt::IgnoreAspectRatio, \
+    swappedImage = sentImage.scaled(wantedHeight, wantedWidth, Qt::IgnoreAspectRatio,
                                     Qt::SmoothTransformation).rgbSwapped();
     imageData = swappedImage.bits();
     imageDataIn.resize(unsigned(swappedImage.height() * swappedImage.width() * wantedChannels));
@@ -86,7 +86,7 @@ void tfliteWorker::receiveImage(const QImage& sentImage)
 
     tfliteInterpreter->Invoke();
 
-    for (int i = 0; tfliteInterpreter->typed_output_tensor<float>(2)[i] > float(DETECT_THRESHOLD)\
+    for (int i = 0; tfliteInterpreter->typed_output_tensor<float>(2)[i] > float(DETECT_THRESHOLD)
          && tfliteInterpreter->typed_output_tensor<float>(2)[i] <= float(1.0); i++){
         outputTensor.push_back(tfliteInterpreter->typed_output_tensor<float>(1)[i]);          //item
         outputTensor.push_back(tfliteInterpreter->typed_output_tensor<float>(2)[i]);          //confidence

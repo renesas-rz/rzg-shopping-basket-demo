@@ -30,15 +30,15 @@
 #include "tfliteworker.h"
 #include "opencvworker.h"
 
-const QStringList MainWindow::labelList = {"Baked Beans", "Coke", "Diet Coke", \
-                               "Fusilli Pasta", "Lindt Chocolate", \
-                               "Mars", "Penne Pasta", "Pringles", \
+const QStringList MainWindow::labelList = {"Baked Beans", "Coke", "Diet Coke",
+                               "Fusilli Pasta", "Lindt Chocolate",
+                               "Mars", "Penne Pasta", "Pringles",
                                "Redbull", "Sweetcorn"};
 
-const std::vector<float> MainWindow::costs = {float(0.85), float(0.82), \
-                                              float(0.79), float(0.89), \
-                                              float(1.80), float(0.80), \
-                                              float(0.89), float(0.85), \
+const std::vector<float> MainWindow::costs = {float(0.85), float(0.82),
+                                              float(0.79), float(0.89),
+                                              float(1.80), float(0.80),
+                                              float(0.89), float(0.85),
                                               float(1.20), float(0.69)};
 
 MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLocation)
@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     opencvThread->start();
     cvWorker = new opencvWorker();
     cvWorker->moveToThread(opencvThread);
-    connect(ui->pushButtonWebcam, SIGNAL(toggled(bool)), this, \
+    connect(ui->pushButtonWebcam, SIGNAL(toggled(bool)), this,
             SLOT(pushButtonWebcamCheck(bool)));
     connect(cvWorker, SIGNAL(sendImage(const QImage&)), this, SLOT(showImage(const QImage&)));
     connect(cvWorker, SIGNAL(webcamInit(bool)), this, SLOT(webcamInitStatus(bool)));
@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     tfWorker->moveToThread(tfliteThread);
     connect(tfWorker, SIGNAL(requestImage()), this, SLOT(receiveRequest()));
     connect(this, SIGNAL(sendImage(const QImage&)), tfWorker, SLOT(receiveImage(const QImage&)));
-    connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const QImage&)), \
+    connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const QImage&)),
             this, SLOT(receiveOutputTensor(const QVector<float>&, int, const QImage&)));
     connect(this, SIGNAL(sendNumOfInferenceThreads(int)), tfWorker, SLOT(receiveNumOfInferenceThreads(int)));
 
@@ -187,8 +187,8 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
 
         ui->tableWidget->insertRow(ui->tableWidget->rowCount());
         ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
-        ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1, \
-        new QTableWidgetItem("£" + QString::number(\
+        ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1,
+        new QTableWidgetItem("£" + QString::number(
         double(costs[labelList.indexOf(labelListSorted.at(i))]), 'f', 2)));
     }
 
@@ -283,9 +283,9 @@ void MainWindow::drawBoxes()
         pen.setColor(BOX_COLOUR);
         pen.setWidth(BOX_WIDTH);
 
-        itemName->setHtml(QString("<div style='background:rgba(0, 0, 0, 100%);'>" + \
-                                  QString(labelList[int(outputTensor[i])] + " " + \
-                                  QString::number(double(scorePercentage), 'f', 1) + "%") + \
+        itemName->setHtml(QString("<div style='background:rgba(0, 0, 0, 100%);'>" +
+                                  QString(labelList[int(outputTensor[i])] + " " +
+                                  QString::number(double(scorePercentage), 'f', 1) + "%") +
                                   QString("</div>")));
         itemName->setPos(double(xmin - X_TEXT_OFFSET), double(ymin - Y_TEXT_OFFSET));
         itemName->setDefaultTextColor(TEXT_COLOUR);
@@ -332,17 +332,17 @@ void MainWindow::webcamInitStatus(bool webcamStatus)
 void MainWindow::on_actionLicense_triggered()
 {
     QMessageBox::information(this, "License",
-                             "Copyright (C) 2019 Renesas Electronics Corp.\n\n" \
-                             "The RZG Shopping Basket Demo is free software using the Qt Open Source Model: "\
-                             "you can redistribute it and/or modify "\
-                             "it under the terms of the GNU General Public License as published by "\
-                             "the Free Software Foundation, either version 2 of the License, or "\
-                             "(at your option) any later version.\n\n" \
-                             "The RZG Shopping Basket Demo is distributed in the hope that it will be useful, "\
-                             "but WITHOUT ANY WARRANTY; without even the implied warranty of "\
-                             "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "\
-                             "GNU General Public License for more details.\n\n" \
-                             "You should have received a copy of the GNU General Public License "\
+                             "Copyright (C) 2019 Renesas Electronics Corp.\n\n"
+                             "The RZG Shopping Basket Demo is free software using the Qt Open Source Model: "
+                             "you can redistribute it and/or modify "
+                             "it under the terms of the GNU General Public License as published by "
+                             "the Free Software Foundation, either version 2 of the License, or "
+                             "(at your option) any later version.\n\n"
+                             "The RZG Shopping Basket Demo is distributed in the hope that it will be useful, "
+                             "but WITHOUT ANY WARRANTY; without even the implied warranty of "
+                             "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "
+                             "GNU General Public License for more details.\n\n"
+                             "You should have received a copy of the GNU General Public License "
                              "along with the RZG Shopping Basket Demo. If not, see https://www.gnu.org/licenses.");
 }
 
