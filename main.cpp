@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
             qFatal("%s not found in the current directory",
                     modelLocation.toStdString().c_str());
 
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     MainWindow w(nullptr, cameraLocation, modelLocation);
     w.show();
     return a.exec();

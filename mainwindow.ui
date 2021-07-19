@@ -222,7 +222,7 @@
     <item row="0" column="8">
      <widget class="QCheckBox" name="checkBoxContinuous">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
