@@ -1,0 +1,7 @@
+*.o
+*.swp
+Makefile
+moc_*.cpp
+ui_mainwindow.h
+supermarket_demo_app
+supermarket_demo_app.pro.user
