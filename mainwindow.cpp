@@ -371,3 +371,8 @@ void MainWindow::on_actionDisconnect_triggered()
     ui->pushButtonCapture->setEnabled(false);
     QMessageBox::warning(this, "Warning", "Webcam not connected");
 }
+
+void MainWindow::on_actionExit_triggered()
+{
+    QApplication::quit();
+}

@@ -62,7 +62,7 @@ public slots:
     void receiveRequest();
     void showImage(const QImage& imageToShow);
     void pushButtonWebcamCheck(bool webcamButtonChecked);
-
+    void on_actionExit_triggered();
 
 private slots:
     void receiveOutputTensor (const QVector<float>& receivedTensor, int recievedTimeElapsed, const QImage &receivedImage);

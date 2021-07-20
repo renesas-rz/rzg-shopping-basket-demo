@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
     "  Stop: Stop continuous inference.\n"
     "  Threads: Change the number of inference threads.\n"
     "  About->License: Read the license that this app is licensed under.\n"
+    "  About->Exit: Close the application.\n"
     "  Camera->Reset: Reset the connection to the webcam.\n"
     "  Camera->Disconnect: Disconnect the currently connected webcam.\n\n"
     "Default options:\n"
