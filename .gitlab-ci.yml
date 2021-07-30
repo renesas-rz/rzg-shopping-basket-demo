@@ -1,0 +1,27 @@
+.app-build:
+  stage: build
+  before_script:
+    - sudo apt update
+    - sudo apt upgrade -y bison
+  script:
+    - mkdir temp
+    - cd temp
+    - git clone git@gitlab.renesas.solutions:spl2/continuous-integration/build-scripts.git
+    - export PATH="${PWD}/build-scripts:${PATH}"
+    - artifactorial-tool.sh -g ai-demos-sdk__${CI_JOB_NAME}.sh -p
+    - chmod +x ai-demos-sdk__${CI_JOB_NAME}.sh
+    - ./ai-demos-sdk__${CI_JOB_NAME}.sh -d /opt/poky/sdk -y
+    - cd ..
+    - source /opt/poky/sdk/environment-setup-aarch64-poky-linux
+    - qmake
+    - make
+  artifacts:
+    name: "${CI_JOB_NAME}-${CI_JOB_ID}"
+    when: always
+    expire_in: 1 month
+    paths:
+      - supermarket_demo_app
+
+hihope-rzg2m_shopping-basket:
+  image: gitlab.renesas.solutions:5050/spl2/continuous-integration/dockerfiles:ubuntu-16.04-latest
+  extends: .app-build
