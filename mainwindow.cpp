@@ -146,7 +146,8 @@ void MainWindow::on_pushButtonImage_clicked()
 void MainWindow::on_pushButtonRun_clicked()
 {
     if (!(image.depth() > 0)) {
-        QMessageBox::warning(this, "Warning", "No source selected, please select an image.");
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "No source selected, please select an image.", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+        msgBox->show();
         return;
     }
 
@@ -319,7 +320,8 @@ void MainWindow::webcamInitStatus(bool webcamStatus)
         webcamTimer->stop();
         ui->pushButtonWebcam->setEnabled(false);
         ui->pushButtonCapture->setEnabled(false);
-        QMessageBox::warning(this, "Warning", "Webcam not connected");
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+        msgBox->show();
         ui->pushButtonWebcam->setChecked(false);
     } else {
         ui->pushButtonWebcam->setEnabled(true);
@@ -334,7 +336,7 @@ void MainWindow::webcamInitStatus(bool webcamStatus)
 
 void MainWindow::on_actionLicense_triggered()
 {
-    QMessageBox::information(this, "License",
+    QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, "License",
                              "Copyright (C) 2021 Renesas Electronics Corp.\n\n"
                              "The RZG Shopping Basket Demo is free software using the Qt Open Source Model: "
                              "you can redistribute it and/or modify "
@@ -346,7 +348,9 @@ void MainWindow::on_actionLicense_triggered()
                              "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "
                              "GNU General Public License for more details.\n\n"
                              "You should have received a copy of the GNU General Public License "
-                             "along with the RZG Shopping Basket Demo. If not, see https://www.gnu.org/licenses.");
+                             "along with the RZG Shopping Basket Demo. If not, see https://www.gnu.org/licenses."
+                             , QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+    msgBox->show();
 }
 
 void MainWindow::on_actionReset_triggered()
@@ -359,7 +363,8 @@ void MainWindow::webcamTimeout()
     opencvThread->deleteLater();
     ui->pushButtonWebcam->setEnabled(false);
     ui->pushButtonCapture->setEnabled(false);
-    QMessageBox::warning(this, "Warning", "Webcam not connected");
+    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+    msgBox->show();
     ui->pushButtonWebcam->setChecked(false);
 }
 
@@ -369,7 +374,8 @@ void MainWindow::on_actionDisconnect_triggered()
     QMetaObject::invokeMethod(cvWorker, "disconnectWebcam");
     ui->pushButtonWebcam->setEnabled(false);
     ui->pushButtonCapture->setEnabled(false);
-    QMessageBox::warning(this, "Warning", "Webcam not connected");
+    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+    msgBox->show();
 }
 
 void MainWindow::on_actionExit_triggered()
