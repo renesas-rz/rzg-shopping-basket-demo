@@ -35,11 +35,15 @@
 #define X_TEXT_OFFSET 6
 #define Y_TEXT_OFFSET 18
 
+#define X_FPS 95
+#define Y_FPS 0
+
 class QGraphicsScene;
 class QGraphicsView;
 class QEventLoop;
 class opencvWorker;
 class tfliteWorker;
+class QElapsedTimer;
 
 namespace Ui { class MainWindow; } //Needed for mainwindow.ui
 
@@ -81,6 +85,7 @@ private slots:
 
 private:
     void drawBoxes();
+    void drawFPS(qint64 timeElapsed);
 
     Ui::MainWindow *ui;
     QPixmap image;
@@ -98,6 +103,7 @@ private:
     QString webcamName;
     static const QStringList labelList;
     static const std::vector<float> costs;
+    QElapsedTimer *fpsTimer;
 };
 
 #endif // MAINWINDOW_H

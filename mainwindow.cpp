@@ -24,6 +24,7 @@
 #include <QEventLoop>
 #include <QTimer>
 #include <QImageReader>
+#include <QElapsedTimer>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -92,6 +93,8 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     connect(this, SIGNAL(sendNumOfInferenceThreads(int)), tfWorker, SLOT(receiveNumOfInferenceThreads(int)));
 
     webcamTimer = new QTimer();
+
+    fpsTimer = new QElapsedTimer();
 }
 
 void MainWindow::on_pushButtonImage_clicked()
@@ -213,6 +216,7 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
         image = QPixmap::fromImage(receivedImage);
         scene->clear();
         image.scaled(ui->graphicsView->width(), ui->graphicsView->height(), Qt::KeepAspectRatio);
+        drawFPS(fpsTimer->restart());
         scene->addPixmap(image);
         scene->setSceneRect(image.rect());
         QMetaObject::invokeMethod(tfWorker, "process");
@@ -246,6 +250,7 @@ void MainWindow::on_pushButtonWebcam_clicked()
     outputTensor.clear();
     ui->tableWidget->setRowCount(0);
     ui->labelInferenceTime->clear();
+    fpsTimer->start();
 }
 
 void MainWindow::showImage(const QImage& imageToShow)
@@ -297,6 +302,18 @@ void MainWindow::drawBoxes()
 
         scene->addRect(double(xmin), double(ymin), double(xmax - xmin), double(ymax - ymin), pen, brush);
     }
+}
+
+void MainWindow::drawFPS(qint64 timeElapsed)
+{
+    float fpsValue = 1000.0/timeElapsed;
+    QGraphicsTextItem* itemFPS = scene->addText(nullptr);
+    itemFPS->setHtml(QString("<div style='background:rgba(0, 0, 0, 100%);font-size:x-large;'>" +
+                      QString(QString::number(double(fpsValue), 'f', 1) + " FPS") +
+                      QString("</div>")));
+    itemFPS->setPos(scene->width() - X_FPS , Y_FPS);
+    itemFPS->setDefaultTextColor(TEXT_COLOUR);
+    itemFPS->setZValue(1);
 }
 
 /*
