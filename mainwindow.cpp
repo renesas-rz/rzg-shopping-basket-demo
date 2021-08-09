@@ -146,7 +146,7 @@ void MainWindow::on_pushButtonImage_clicked()
 void MainWindow::on_pushButtonRun_clicked()
 {
     if (!(image.depth() > 0)) {
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "No source selected, please select an image.", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "No source selected, please select an image.", QMessageBox::NoButton, this, Qt::Dialog | Qt::ToolTip);
         msgBox->show();
         return;
     }
@@ -320,7 +320,7 @@ void MainWindow::webcamInitStatus(bool webcamStatus)
         webcamTimer->stop();
         ui->pushButtonWebcam->setEnabled(false);
         ui->pushButtonCapture->setEnabled(false);
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::ToolTip);
         msgBox->show();
         ui->pushButtonWebcam->setChecked(false);
     } else {
@@ -349,7 +349,7 @@ void MainWindow::on_actionLicense_triggered()
                              "GNU General Public License for more details.\n\n"
                              "You should have received a copy of the GNU General Public License "
                              "along with the RZG Shopping Basket Demo. If not, see https://www.gnu.org/licenses."
-                             , QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+                             , QMessageBox::NoButton, this, Qt::Dialog | Qt::ToolTip);
     msgBox->show();
 }
 
@@ -363,7 +363,7 @@ void MainWindow::webcamTimeout()
     opencvThread->deleteLater();
     ui->pushButtonWebcam->setEnabled(false);
     ui->pushButtonCapture->setEnabled(false);
-    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::ToolTip);
     msgBox->show();
     ui->pushButtonWebcam->setChecked(false);
 }
@@ -374,7 +374,7 @@ void MainWindow::on_actionDisconnect_triggered()
     QMetaObject::invokeMethod(cvWorker, "disconnectWebcam");
     ui->pushButtonWebcam->setEnabled(false);
     ui->pushButtonCapture->setEnabled(false);
-    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::ToolTip);
     msgBox->show();
 }
 
