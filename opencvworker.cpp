@@ -63,6 +63,16 @@ void opencvWorker::readFrame()
     emit sendImage(videoImage);
 }
 
+void opencvWorker::checkWebcam()
+{
+    if(!videoCapture->read(videoFrame)) {
+        webcamInitialised = false;
+        videoCapture->release();
+        return;
+    } else
+         webcamInitialised = true;
+}
+
 void opencvWorker::disconnectWebcam()
 {
     if (webcamInitialised == true)

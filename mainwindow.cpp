@@ -92,8 +92,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
             this, SLOT(receiveOutputTensor(const QVector<float>&, int, const QImage&)));
     connect(this, SIGNAL(sendNumOfInferenceThreads(int)), tfWorker, SLOT(receiveNumOfInferenceThreads(int)));
 
-    webcamTimer = new QTimer();
-
     fpsTimer = new QElapsedTimer();
 }
 
@@ -251,14 +249,14 @@ void MainWindow::on_pushButtonWebcam_clicked()
     ui->tableWidget->setRowCount(0);
     ui->labelInferenceTime->clear();
     fpsTimer->start();
+    if (ui->pushButtonWebcam->isChecked())
+        QMetaObject::invokeMethod(cvWorker, "readFrame");
 }
 
 void MainWindow::showImage(const QImage& imageToShow)
 {
-    if (ui->pushButtonWebcam->isEnabled()) {
+    if (ui->pushButtonWebcam->isEnabled())
         QMetaObject::invokeMethod(cvWorker, "readFrame");
-        webcamTimer->start();
-    }
 
     imageNew = imageToShow;
 
@@ -334,20 +332,12 @@ void MainWindow::pushButtonWebcamCheck(bool webcamButtonChecked)
 void MainWindow::webcamInitStatus(bool webcamStatus)
 {
     if (!webcamStatus) {
-        webcamTimer->stop();
-        ui->pushButtonWebcam->setEnabled(false);
-        ui->pushButtonCapture->setEnabled(false);
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::ToolTip);
-        msgBox->show();
+        webcamNotConnected();
         ui->pushButtonWebcam->setChecked(false);
     } else {
         ui->pushButtonWebcam->setEnabled(true);
         ui->pushButtonCapture->setEnabled(true);
-        QMetaObject::invokeMethod(cvWorker, "readFrame");
-        webcamTimer->setInterval(1000);
-        webcamTimer->setSingleShot(true);
-        connect(webcamTimer, SIGNAL(timeout()), this, SLOT(webcamTimeout()));
-        webcamTimer->start();
+        cvWorker->checkWebcam();
     }
 }
 
@@ -375,7 +365,7 @@ void MainWindow::on_actionReset_triggered()
     QMetaObject::invokeMethod(cvWorker, "initialiseWebcam", Qt::AutoConnection, Q_ARG(QString,webcamName));
 }
 
-void MainWindow::webcamTimeout()
+void MainWindow::webcamNotConnected()
 {
     opencvThread->deleteLater();
     ui->pushButtonWebcam->setEnabled(false);
@@ -387,12 +377,8 @@ void MainWindow::webcamTimeout()
 
 void MainWindow::on_actionDisconnect_triggered()
 {
-    webcamTimer->stop();
     QMetaObject::invokeMethod(cvWorker, "disconnectWebcam");
-    ui->pushButtonWebcam->setEnabled(false);
-    ui->pushButtonCapture->setEnabled(false);
-    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::ToolTip);
-    msgBox->show();
+    webcamNotConnected();
 }
 
 void MainWindow::on_actionExit_triggered()

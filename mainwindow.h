@@ -79,7 +79,7 @@ private slots:
     void on_pushButtonWebcam_clicked();
     void on_actionLicense_triggered();
     void on_actionReset_triggered();
-    void webcamTimeout();
+    void webcamNotConnected();
 
     void on_actionDisconnect_triggered();
 
@@ -99,7 +99,6 @@ private:
     QThread *opencvThread, *tfliteThread;
     QEventLoop *qeventLoop;
     QStringList labelListSorted;
-    QTimer *webcamTimer;
     QString webcamName;
     static const QStringList labelList;
     static const std::vector<float> costs;

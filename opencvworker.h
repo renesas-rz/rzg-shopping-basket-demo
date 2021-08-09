@@ -36,6 +36,9 @@ class opencvWorker : public QObject
 {
     Q_OBJECT
 
+public:
+    void checkWebcam();
+
 signals:
     void sendImage(const QImage&);
     void webcamInit(bool webcamInitialised);
