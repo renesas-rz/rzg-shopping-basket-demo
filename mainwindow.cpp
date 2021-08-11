@@ -367,7 +367,6 @@ void MainWindow::on_actionReset_triggered()
 
 void MainWindow::webcamNotConnected()
 {
-    opencvThread->deleteLater();
     ui->pushButtonWebcam->setEnabled(false);
     ui->pushButtonCapture->setEnabled(false);
     QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::ToolTip);
