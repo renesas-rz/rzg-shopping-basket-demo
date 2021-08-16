@@ -31,16 +31,16 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     make install
     ```
 
-2. Build and install [TensorFlow lite r1.10](https://github.com/tensorflow/tensorflow/tree/r1.10).
+2. Build and install [TensorFlow lite v2.3.1](https://github.com/tensorflow/tensorflow/tree/v2.3.1).
     ```
     git clone  https://github.com/tensorflow/tensorflow.git
     cd tensorflow/
-    git checkout r1.10
-    ./tensorflow/contrib/lite/download_dependencies.sh
-    make -f ./tensorflow/contrib/lite/Makefile
-    sudo cp ./tensorflow/contrib/lite/gen/lib/libtensorflow-lite.a /usr/local/lib/
+    git checkout v2.3.1
+    ./tensorflow/lite/tools/make/download_dependencies.sh
+    make -f ./tensorflow/lite/tools/make/Makefile
+    sudo cp ./tensorflow/lite/tools/make/gen/linux_x86_64/lib/libtensorflow-lite.a /usr/local/lib/
     sudo cp -r tensorflow/ /usr/local/include
-    sudo cp -r tensorflow/contrib/lite/downloads/flatbuffers/include/flatbuffers/ /usr/local/include
+    sudo cp -r tensorflow/lite/tools/make/downloads/flatbuffers/include/flatbuffers /usr/local/include
     ```
 3. Copy `shoppingBasketDemo.tflite` to `/opt/Shopping_Basket_Demo`.
 4. Run `qmake`
