@@ -33,7 +33,7 @@ class tfliteWorker : public QObject
     Q_OBJECT
 
 public:
-    tfliteWorker(QString modelLocation);
+    tfliteWorker(QString modelLocation, bool armnnDelegate);
 
 signals:
     void sendOutputTensor(const QVector<float>&, int, const QImage&);

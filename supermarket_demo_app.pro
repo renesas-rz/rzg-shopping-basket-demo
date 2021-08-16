@@ -18,7 +18,7 @@
 
 QT += core gui multimedia widgets
 
-CONFIG += c++11
+CONFIG += c++14
 
 SOURCES += \
     main.cpp \
@@ -36,7 +36,8 @@ FORMS += \
 
 INCLUDEPATH += \
     $$(SDKTARGETSYSROOT)/usr/include/opencv4 \
-    $$(SDKTARGETSYSROOT)/usr/include/tensorflow/lite/tools/make/downloads/flatbuffers/include
+    $$(SDKTARGETSYSROOT)/usr/include/tensorflow/lite/tools/make/downloads/flatbuffers/include \
+    $$(SDKTARGETSYSROOT)/usr/include/armnn \
 
 LIBS += \
     -L $$(SDKTARGETSYSROOT)/usr/lib64 \
@@ -45,3 +46,11 @@ LIBS += \
     -ltensorflow-lite \
     -ldl \
     -lutil
+
+system("echo $ARCH | grep arm64"):{
+DEFINES += SBD_ARM64
+LIBS += \
+    -larmnn \
+    -larmnnDelegate \
+    -larmnnUtils
+}

@@ -22,7 +22,14 @@
 
 #include "tfliteworker.h"
 
-tfliteWorker::tfliteWorker(QString modelLocation)
+#ifdef SBD_ARM64
+#include <armnn/ArmNN.hpp>
+#include <armnn/Utils.hpp>
+#include <delegate/armnn_delegate.hpp>
+#include <delegate/DelegateOptions.hpp>
+#endif
+
+tfliteWorker::tfliteWorker(QString modelLocation, bool armnnDelegate)
 {
     tflite::ops::builtin::BuiltinOpResolver tfliteResolver;
     TfLiteIntArray *wantedDimensions;
@@ -31,6 +38,21 @@ tfliteWorker::tfliteWorker(QString modelLocation)
 
     tfliteModel = tflite::FlatBufferModel::BuildFromFile(modelLocation.toStdString().c_str());
     tflite::InterpreterBuilder(*tfliteModel, tfliteResolver) (&tfliteInterpreter);
+
+#ifdef SBD_ARM64
+    /* Setup the delegate */
+    if(armnnDelegate == true) {
+        std::vector<armnn::BackendId> backends = {armnn::Compute::CpuAcc};
+        armnnDelegate::DelegateOptions delegateOptions(backends);
+        std::unique_ptr<TfLiteDelegate, decltype(&armnnDelegate::TfLiteArmnnDelegateDelete)>
+            armnnTfLiteDelegate(armnnDelegate::TfLiteArmnnDelegateCreate(delegateOptions),
+            armnnDelegate::TfLiteArmnnDelegateDelete);
+
+        /* Instruct the Interpreter to use the armnnDelegate */
+        if (tfliteInterpreter->ModifyGraphWithDelegate(std::move(armnnTfLiteDelegate)) != kTfLiteOk)
+           qWarning("Delegate could not be used to modify the graph\n");
+    }
+#endif
 
     if (tfliteInterpreter->AllocateTensors() != kTfLiteOk)
         qFatal("Failed to allocate tensors!");

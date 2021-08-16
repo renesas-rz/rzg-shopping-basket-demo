@@ -47,6 +47,9 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     , ui(new Ui::MainWindow)
 {
     webcamName = cameraLocation;
+    modelPath = modelLocation;
+    useArmNNDelegate = true;
+
     ui->setupUi(this);
     QMainWindow::showMaximized();
     scene = new QGraphicsScene(this);
@@ -89,10 +92,18 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     QMetaObject::invokeMethod(cvWorker, "initialiseWebcam", Qt::AutoConnection, Q_ARG(QString, webcamName));
 
     qRegisterMetaType<QVector<float> >("QVector<float>");
+
+    createTfThread();
+
+    fpsTimer = new QElapsedTimer();
+}
+
+void MainWindow::createTfThread()
+{
     tfliteThread = new QThread();
     tfliteThread->setObjectName("tfliteThread");
     tfliteThread->start();
-    tfWorker = new tfliteWorker(modelLocation);
+    tfWorker = new tfliteWorker(modelPath, useArmNNDelegate);
     tfWorker->moveToThread(tfliteThread);
 
     connect(tfWorker, SIGNAL(requestImage()), this, SLOT(receiveRequest()));
@@ -100,8 +111,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const QImage&)),
             this, SLOT(receiveOutputTensor(const QVector<float>&, int, const QImage&)));
     connect(this, SIGNAL(sendNumOfInferenceThreads(int)), tfWorker, SLOT(receiveNumOfInferenceThreads(int)));
-
-    fpsTimer = new QElapsedTimer();
 }
 
 void MainWindow::on_pushButtonImage_clicked()
@@ -175,7 +184,6 @@ void MainWindow::on_inferenceThreadCount_valueChanged(int threads)
 void MainWindow::receiveRequest()
 {
     sendImage(imageToSend);
-    tfWorker->moveToThread(tfliteThread);
 }
 
 void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int receivedTimeElapsed, const QImage& receivedImage)
@@ -413,6 +421,30 @@ void MainWindow::on_actionDisconnect_triggered()
 
     if (!ui->checkBoxContinuous->isChecked())
         webcamNotConnected();
+}
+
+void MainWindow::on_actionEnable_ArmNN_Delegate_triggered()
+{
+    /* Update the GUI text */
+    if(useArmNNDelegate) {
+        ui->actionEnable_ArmNN_Delegate->setText("Enable ArmNN Delegate");
+        ui->labelDelegate->setText("TensorFlow Lite");
+    } else {
+        ui->actionEnable_ArmNN_Delegate->setText("Disable ArmNN Delegate");
+        ui->labelDelegate->setText("TensorFlow Lite + ArmNN delegate");
+    }
+
+    /* Toggle delegate state */
+    useArmNNDelegate = !useArmNNDelegate;
+
+    /* Remake TfLite data structures with the new ArmNNDelegate settings */
+    tfliteThread->quit();
+
+    if(!tfliteThread->wait(800)) // Allow time for the TfLite thread to finish
+        qWarning("warning: could not recreate TfLite Thread");
+
+    tfliteThread->deleteLater();
+    createTfThread();
 }
 
 void MainWindow::on_actionExit_triggered()

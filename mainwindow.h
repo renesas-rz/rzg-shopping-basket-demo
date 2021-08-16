@@ -73,6 +73,7 @@ private slots:
     void on_pushButtonWebcam_clicked();
     void on_actionLicense_triggered();
     void on_actionReset_triggered();
+    void on_actionEnable_ArmNN_Delegate_triggered();
     void webcamNotConnected();
     void setImageSize();
     void on_actionDisconnect_triggered();
@@ -80,8 +81,10 @@ private slots:
 private:
     void drawBoxes();
     void drawFPS(qint64 timeElapsed);
+    void createTfThread();
 
     Ui::MainWindow *ui;
+    bool useArmNNDelegate;
     QPixmap image;
     QGraphicsScene *scene;
     QImage imageNew;
@@ -94,6 +97,7 @@ private:
     QEventLoop *qeventLoop;
     QStringList labelListSorted;
     QString webcamName;
+    QString modelPath;
     static const QStringList labelList;
     static const std::vector<float> costs;
     QElapsedTimer *fpsTimer;
