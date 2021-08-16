@@ -110,6 +110,7 @@ void MainWindow::on_pushButtonImage_clicked()
     outputTensor.clear();
     ui->tableWidget->setRowCount(0);
     ui->labelInferenceTime->clear();
+    setImageSize();
 
     dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setDirectory(IMAGE_DIRECTORY);
@@ -131,8 +132,8 @@ void MainWindow::on_pushButtonImage_clicked()
 
     if (!fileName.trimmed().isEmpty()) {
         imageToSend.load(fileName);
-        if (imageToSend.width() != IMAGE_WIDTH || imageToSend.height() != IMAGE_HEIGHT)
-            imageToSend = imageToSend.scaled(IMAGE_WIDTH, IMAGE_HEIGHT);
+        if (imageToSend.width() != imageWidth || imageToSend.height() != imageHeight)
+            imageToSend = imageToSend.scaled(imageWidth, imageHeight);
 
         image = QPixmap::fromImage(imageToSend);
         scene->clear();
@@ -259,9 +260,10 @@ void MainWindow::showImage(const QImage& imageToShow)
         QMetaObject::invokeMethod(cvWorker, "readFrame");
 
     imageNew = imageToShow;
+    setImageSize();
 
-    if ((imageNew.width() != IMAGE_WIDTH || imageNew.height() != IMAGE_HEIGHT) && imageNew.depth() > 0)
-        imageNew = imageNew.scaled(IMAGE_WIDTH, IMAGE_HEIGHT);
+    if ((imageNew.width() != imageWidth || imageNew.height() != imageHeight) && imageNew.depth() > 0)
+        imageNew = imageNew.scaled(imageWidth, imageHeight);
 
     if (ui->pushButtonWebcam->isChecked())
         imageToSend = imageNew;
@@ -339,6 +341,12 @@ void MainWindow::webcamInitStatus(bool webcamStatus)
         ui->pushButtonCapture->setEnabled(true);
         cvWorker->checkWebcam();
     }
+}
+
+void MainWindow::setImageSize()
+{
+    imageHeight = ui->graphicsView->height();
+    imageWidth = ui->graphicsView->width();
 }
 
 void MainWindow::on_actionLicense_triggered()

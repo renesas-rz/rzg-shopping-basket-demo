@@ -23,8 +23,6 @@
 #define CPU_MODEL_NAME "shoppingBasketDemo.tflite"
 
 #define IMAGE_DIRECTORY "sample_images"
-#define IMAGE_WIDTH 800
-#define IMAGE_HEIGHT 600
 
 #define TABLE_COLUMN_WIDTH 180
 #define BOX_WIDTH 2
@@ -78,7 +76,7 @@ private slots:
     void on_actionLicense_triggered();
     void on_actionReset_triggered();
     void webcamNotConnected();
-
+    void setImageSize();
     void on_actionDisconnect_triggered();
 
 private:
@@ -101,6 +99,8 @@ private:
     static const QStringList labelList;
     static const std::vector<float> costs;
     QElapsedTimer *fpsTimer;
+    int imageWidth;
+    int imageHeight;
 };
 
 #endif // MAINWINDOW_H
