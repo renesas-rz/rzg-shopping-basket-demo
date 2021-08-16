@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
 {
     webcamName = cameraLocation;
     ui->setupUi(this);
-    this->resize(MAINWINDOW_WIDTH, MAINWINDOW_HEIGHT);
+    QMainWindow::showMaximized();
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
 
