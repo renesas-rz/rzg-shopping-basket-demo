@@ -16,6 +16,8 @@
  * along with the RZG Shopping Basket Demo.  If not, see <https://www.gnu.org/licenses/>.
  *****************************************************************************************/
 
+#include <QCamera>
+#include <QCameraImageCapture>
 #include <QImage>
 
 #include "opencvworker.h"
@@ -24,12 +26,13 @@ void opencvWorker::initialiseWebcam(QString cameraLocation)
 {
     QString gstreamerPipeline;
 
+    getResolution();
     if (webcamInitialised == true)
         videoCapture->release();
 
     if (!cameraLocation.isEmpty()) {
         gstreamerPipeline = "v4l2src device=" + QString(cameraLocation) +
-            " ! video/x-raw, width=" CAMERA_WIDTH ", height=" CAMERA_HEIGHT
+            " ! video/x-raw, width=" + QString::number(cameraWidth) + ", height=" + QString::number(cameraHeight) +
             " ! videoconvert ! appsink";
 
         videoCapture.reset(new cv::VideoCapture(gstreamerPipeline.toStdString(), cv::CAP_GSTREAMER));
@@ -44,6 +47,26 @@ void opencvWorker::initialiseWebcam(QString cameraLocation)
     }
 
     emit webcamInit(webcamInitialised);
+}
+
+void opencvWorker::getResolution()
+{
+    QList<QByteArray> cameraDevices = QCamera::availableDevices();
+    QList<QSize> resolutions;
+    QCamera *camera;
+    QCameraImageCapture *imageCapture;
+
+    if (cameraDevices.count() > 0) {
+        QByteArray cameraDevice = cameraDevices.first();
+        camera = new QCamera(cameraDevice);
+        camera->load();
+        imageCapture = new QCameraImageCapture(camera);
+        resolutions = imageCapture->supportedResolutions();
+
+        QSize resol = resolutions.takeLast();
+        cameraWidth = resol.width();
+        cameraHeight = resol.height();
+    }
 }
 
 void opencvWorker::readFrame()

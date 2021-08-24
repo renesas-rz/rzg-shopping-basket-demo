@@ -26,10 +26,6 @@
 
 #include <QObject>
 
-#define CAMERA_WIDTH "1280"
-#define CAMERA_HEIGHT "1024"
-
-
 Q_DECLARE_METATYPE(cv::Mat)
 
 class opencvWorker : public QObject
@@ -47,11 +43,14 @@ private:
     cv::Mat videoFrame;
     std::unique_ptr<cv::VideoCapture> videoCapture;
     bool webcamInitialised;
+    int cameraHeight;
+    int cameraWidth;
 
 private slots:
     void initialiseWebcam(QString cameraLocation);
     void readFrame();
     void disconnectWebcam();
+    void getResolution();
 };
 
 #endif // OPENCVCAPTUREWORKER_H
