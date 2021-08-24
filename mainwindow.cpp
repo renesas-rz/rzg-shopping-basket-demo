@@ -147,7 +147,7 @@ void MainWindow::on_pushButtonImage_clicked()
 void MainWindow::on_pushButtonRun_clicked()
 {
     if (!(image.depth() > 0)) {
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "No source selected, please select an image.", QMessageBox::NoButton, this, Qt::Dialog | Qt::ToolTip);
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "No source selected, please select an image.", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
         msgBox->show();
         return;
     }
@@ -356,7 +356,7 @@ void MainWindow::on_actionLicense_triggered()
                              "GNU General Public License for more details.\n\n"
                              "You should have received a copy of the GNU General Public License "
                              "along with the RZG Shopping Basket Demo. If not, see https://www.gnu.org/licenses."
-                             , QMessageBox::NoButton, this, Qt::Dialog | Qt::ToolTip);
+                             , QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
     msgBox->show();
 }
 
@@ -369,7 +369,7 @@ void MainWindow::webcamNotConnected()
 {
     ui->pushButtonWebcam->setEnabled(false);
     ui->pushButtonCapture->setEnabled(false);
-    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::ToolTip);
+    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
     msgBox->show();
     ui->pushButtonWebcam->setChecked(false);
 }
