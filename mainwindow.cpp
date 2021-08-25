@@ -297,7 +297,7 @@ void MainWindow::drawBoxes()
                                   QString(labelList[int(outputTensor[i])] + " " +
                                   QString::number(double(scorePercentage), 'f', 1) + "%") +
                                   QString("</div>")));
-        itemName->setPos(double(xmin - X_TEXT_OFFSET), double(ymin - Y_TEXT_OFFSET));
+        itemName->setPos(xmin, ymin);
         itemName->setDefaultTextColor(TEXT_COLOUR);
         itemName->setZValue(1);
 
