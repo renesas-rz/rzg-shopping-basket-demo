@@ -61,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     ui->tableWidget->setColumnWidth(0, TABLE_COLUMN_WIDTH);
     ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
 
+    ui->labelInference->setText(TEXT_INFERENCE);
     ui->checkBoxContinuous->setEnabled(false);
     ui->pushButtonWebcam->setEnabled(false);
     ui->pushButtonCapture->setEnabled(false);
@@ -109,8 +110,8 @@ void MainWindow::on_pushButtonImage_clicked()
     ui->pushButtonWebcam->setChecked(false);
     outputTensor.clear();
     ui->tableWidget->setRowCount(0);
-    ui->labelInferenceTime->clear();
     setImageSize();
+    ui->labelInference->setText(TEXT_INFERENCE);
 
     dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setDirectory(IMAGE_DIRECTORY);
@@ -198,7 +199,7 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
             double(costs[labelList.indexOf(labelListSorted.at(i))]), 'f', 2)));
     }
 
-    ui->labelInferenceTime->setText(QString("%1 ms").arg(receivedTimeElapsed));
+    ui->labelInference->setText(TEXT_INFERENCE + QString("%1 ms").arg(receivedTimeElapsed));
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());
 
     item = new QTableWidgetItem("Total Cost");
@@ -235,7 +236,7 @@ void MainWindow::on_pushButtonCapture_clicked()
     ui->pushButtonWebcam->setChecked(false);
     outputTensor.clear();
     ui->tableWidget->setRowCount(0);
-    ui->labelInferenceTime->clear();
+    ui->labelInference->setText(TEXT_INFERENCE);
 
     imageToSend = imageNew;
     image = QPixmap::fromImage(imageToSend);
@@ -248,7 +249,7 @@ void MainWindow::on_pushButtonWebcam_clicked()
 {
     outputTensor.clear();
     ui->tableWidget->setRowCount(0);
-    ui->labelInferenceTime->clear();
+    ui->labelInference->setText(TEXT_INFERENCE);
     fpsTimer->start();
     if (ui->pushButtonWebcam->isChecked())
         QMetaObject::invokeMethod(cvWorker, "readFrame");

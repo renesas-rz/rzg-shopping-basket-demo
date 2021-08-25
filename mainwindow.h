@@ -23,6 +23,7 @@
 #define CPU_MODEL_NAME "shoppingBasketDemo.tflite"
 
 #define IMAGE_DIRECTORY "sample_images"
+#define TEXT_INFERENCE "Inference Time: "
 
 #define TABLE_COLUMN_WIDTH 180
 #define BOX_WIDTH 2
