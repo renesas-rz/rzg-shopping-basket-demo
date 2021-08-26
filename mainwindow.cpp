@@ -302,7 +302,7 @@ void MainWindow::drawBoxes()
         pen.setColor(BOX_COLOUR);
         pen.setWidth(BOX_WIDTH);
 
-        itemName->setHtml(QString("<div style='background:rgba(0, 0, 0, 100%);'>" +
+        itemName->setHtml(QString("<div style='background:rgba(0, 0, 0, 100%);font-size:xx-large;'>" +
                                   QString(labelList[int(outputTensor[i])] + " " +
                                   QString::number(double(scorePercentage), 'f', 1) + "%") +
                                   QString("</div>")));
@@ -318,7 +318,7 @@ void MainWindow::drawFPS(qint64 timeElapsed)
 {
     float fpsValue = 1000.0/timeElapsed;
     QGraphicsTextItem* itemFPS = scene->addText(nullptr);
-    itemFPS->setHtml(QString("<div style='background:rgba(0, 0, 0, 100%);font-size:x-large;'>" +
+    itemFPS->setHtml(QString("<div style='background:rgba(0, 0, 0, 100%);font-size:xx-large;'>" +
                       QString(QString::number(double(fpsValue), 'f', 1) + " FPS") +
                       QString("</div>")));
     itemFPS->setPos(scene->width() - X_FPS , Y_FPS);
