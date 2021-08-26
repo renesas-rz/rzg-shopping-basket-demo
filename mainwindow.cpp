@@ -55,11 +55,18 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
+    QFont font;
+    font.setPointSize(14);
     ui->tableWidget->setHorizontalHeaderLabels({"Item", "Price"});
+    ui->tableWidget->horizontalHeader()->setFont(font);
     ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableWidget->resizeColumnsToContents();
-    ui->tableWidget->setColumnWidth(0, TABLE_COLUMN_WIDTH);
+    double column1Width = ui->tableWidget->geometry().width() * 0.8;
+    ui->tableWidget->setColumnWidth(0, column1Width);
     ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
+    if (ui->graphicsView->width() > GRAPHICS_VIEW_WIDTH_4K) {
+        ui->tableWidget->verticalHeader()->setDefaultSectionSize(60);
+    }
 
     ui->labelInference->setText(TEXT_INFERENCE);
     ui->checkBoxContinuous->setEnabled(false);
@@ -175,6 +182,7 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
         return;
 
     QTableWidgetItem* item;
+    QTableWidgetItem* price;
     float totalCost = 0;
 
     outputTensor = receivedTensor;
@@ -195,19 +203,20 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
         ui->tableWidget->insertRow(ui->tableWidget->rowCount());
         ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
         ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1,
-        new QTableWidgetItem("£" + QString::number(
+        price = new QTableWidgetItem("£" + QString::number(
             double(costs[labelList.indexOf(labelListSorted.at(i))]), 'f', 2)));
+        price->setTextAlignment(Qt::AlignRight);
     }
 
     ui->labelInference->setText(TEXT_INFERENCE + QString("%1 ms").arg(receivedTimeElapsed));
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());
 
-    item = new QTableWidgetItem("Total Cost");
+    item = new QTableWidgetItem("Total Cost:");
     item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
 
     item = new QTableWidgetItem("£" + QString::number(double(totalCost), 'f', 2));
-    item->setTextAlignment(Qt::AlignBottom);
+    item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1, item);
 
     if (!ui->checkBoxContinuous->isChecked()) {
