@@ -380,7 +380,10 @@ void MainWindow::on_actionLicense_triggered()
 
 void MainWindow::on_actionReset_triggered()
 {
-    QMetaObject::invokeMethod(cvWorker, "initialiseWebcam", Qt::AutoConnection, Q_ARG(QString,webcamName));
+    if (webcamName.isEmpty() && QDir("/dev/v4l/by-id").exists()) {
+        webcamName = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
+    }
+    QMetaObject::invokeMethod(cvWorker, "initialiseWebcam", Qt::DirectConnection, Q_ARG(QString,webcamName));
 }
 
 void MainWindow::webcamNotConnected()
