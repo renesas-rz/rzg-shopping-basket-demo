@@ -69,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     }
 
     ui->labelInference->setText(TEXT_INFERENCE);
+    ui->labelFps->setText(TEXT_FPS);
     ui->checkBoxContinuous->setEnabled(false);
     ui->pushButtonWebcam->setEnabled(false);
     ui->pushButtonCapture->setEnabled(false);
@@ -119,6 +120,7 @@ void MainWindow::on_pushButtonImage_clicked()
     ui->tableWidget->setRowCount(0);
     setImageSize();
     ui->labelInference->setText(TEXT_INFERENCE);
+    ui->labelFps->setText(TEXT_FPS);
 
     dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setDirectory(IMAGE_DIRECTORY);
@@ -246,6 +248,7 @@ void MainWindow::on_pushButtonCapture_clicked()
     outputTensor.clear();
     ui->tableWidget->setRowCount(0);
     ui->labelInference->setText(TEXT_INFERENCE);
+    ui->labelFps->setText(TEXT_FPS);
 
     imageToSend = imageNew;
     image = QPixmap::fromImage(imageToSend);
@@ -259,6 +262,7 @@ void MainWindow::on_pushButtonWebcam_clicked()
     outputTensor.clear();
     ui->tableWidget->setRowCount(0);
     ui->labelInference->setText(TEXT_INFERENCE);
+    ui->labelFps->setText(TEXT_FPS);
     fpsTimer->start();
     if (ui->pushButtonWebcam->isChecked())
         QMetaObject::invokeMethod(cvWorker, "readFrame");
@@ -317,13 +321,7 @@ void MainWindow::drawBoxes()
 void MainWindow::drawFPS(qint64 timeElapsed)
 {
     float fpsValue = 1000.0/timeElapsed;
-    QGraphicsTextItem* itemFPS = scene->addText(nullptr);
-    itemFPS->setHtml(QString("<div style='background:rgba(0, 0, 0, 100%);font-size:xx-large;'>" +
-                      QString(QString::number(double(fpsValue), 'f', 1) + " FPS") +
-                      QString("</div>")));
-    itemFPS->setPos(scene->width() - X_FPS , Y_FPS);
-    itemFPS->setDefaultTextColor(TEXT_COLOUR);
-    itemFPS->setZValue(1);
+    ui->labelFps->setText(TEXT_FPS + QString::number(fpsValue, 'f', 1));
 }
 
 /*
