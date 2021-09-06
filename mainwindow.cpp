@@ -191,49 +191,53 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
     ui->tableWidget->setRowCount(0);
     labelListSorted.clear();
 
-    for (int i = 0; (i + 5) < receivedTensor.size(); i += 6) {
-        totalCost += costs[int(outputTensor[i])];
-        labelListSorted.push_back(labelList[int(outputTensor[i])]);
-    }
-
-    labelListSorted.sort();
-
-    for (int i = 0; i < labelListSorted.size(); i++) {
-        QTableWidgetItem* item = new QTableWidgetItem(labelListSorted.at(i));
-        item->setTextAlignment(Qt::AlignCenter);
-
-        ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-        ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
-        ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1,
-        price = new QTableWidgetItem("£" + QString::number(
-            double(costs[labelList.indexOf(labelListSorted.at(i))]), 'f', 2)));
-        price->setTextAlignment(Qt::AlignRight);
-    }
-
-    ui->labelInference->setText(TEXT_INFERENCE + QString("%1 ms").arg(receivedTimeElapsed));
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-
-    item = new QTableWidgetItem("Total Cost:");
-    item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
-    ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
-
-    item = new QTableWidgetItem("£" + QString::number(double(totalCost), 'f', 2));
-    item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
-    ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1, item);
-
-    if (!ui->checkBoxContinuous->isChecked()) {
-        ui->pushButtonRun->setEnabled(true);
+    if (webcamDisconnect == true) {
+        webcamNotConnected();
     } else {
-        image = QPixmap::fromImage(receivedImage);
-        scene->clear();
-        image.scaled(ui->graphicsView->width(), ui->graphicsView->height(), Qt::KeepAspectRatio);
-        drawFPS(fpsTimer->restart());
-        scene->addPixmap(image);
-        scene->setSceneRect(image.rect());
-        QMetaObject::invokeMethod(tfWorker, "process");
-    }
+        for (int i = 0; (i + 5) < receivedTensor.size(); i += 6) {
+            totalCost += costs[int(outputTensor[i])];
+            labelListSorted.push_back(labelList[int(outputTensor[i])]);
+        }
 
-    drawBoxes();
+        labelListSorted.sort();
+
+        for (int i = 0; i < labelListSorted.size(); i++) {
+            QTableWidgetItem* item = new QTableWidgetItem(labelListSorted.at(i));
+            item->setTextAlignment(Qt::AlignCenter);
+
+            ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+            ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
+            ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1,
+            price = new QTableWidgetItem("£" + QString::number(
+            double(costs[labelList.indexOf(labelListSorted.at(i))]), 'f', 2)));
+            price->setTextAlignment(Qt::AlignRight);
+        }
+
+        ui->labelInference->setText(TEXT_INFERENCE + QString("%1 ms").arg(receivedTimeElapsed));
+        ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+
+        item = new QTableWidgetItem("Total Cost:");
+        item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
+        ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
+
+        item = new QTableWidgetItem("£" + QString::number(double(totalCost), 'f', 2));
+        item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
+        ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1, item);
+
+        if (!ui->checkBoxContinuous->isChecked()) {
+            ui->pushButtonRun->setEnabled(true);
+        } else {
+            image = QPixmap::fromImage(receivedImage);
+            scene->clear();
+            image.scaled(ui->graphicsView->width(), ui->graphicsView->height(), Qt::KeepAspectRatio);
+            drawFPS(fpsTimer->restart());
+            scene->addPixmap(image);
+            scene->setSceneRect(image.rect());
+            QMetaObject::invokeMethod(tfWorker, "process");
+        }
+
+        drawBoxes();
+    }
 }
 
 void MainWindow::on_pushButtonStop_clicked()
@@ -342,12 +346,15 @@ void MainWindow::pushButtonWebcamCheck(bool webcamButtonChecked)
 void MainWindow::webcamInitStatus(bool webcamStatus)
 {
     if (!webcamStatus) {
-        webcamNotConnected();
+        if (webcamName.isEmpty())
+            webcamNotConnected();
         ui->pushButtonWebcam->setChecked(false);
     } else {
         ui->pushButtonWebcam->setEnabled(true);
         ui->pushButtonCapture->setEnabled(true);
+        ui->pushButtonRun->setEnabled(true);
         cvWorker->checkWebcam();
+        webcamDisconnect = false;
     }
 }
 
@@ -391,12 +398,21 @@ void MainWindow::webcamNotConnected()
     QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
     msgBox->show();
     ui->pushButtonWebcam->setChecked(false);
+    scene->clear();
+    ui->graphicsView->setScene(scene);
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setRowCount(0);
+    ui->labelInference->setText(TEXT_INFERENCE);
+    ui->labelFps->setText(TEXT_FPS);
 }
 
 void MainWindow::on_actionDisconnect_triggered()
 {
+    webcamDisconnect = true;
     QMetaObject::invokeMethod(cvWorker, "disconnectWebcam");
-    webcamNotConnected();
+
+    if (!ui->checkBoxContinuous->isChecked())
+        webcamNotConnected();
 }
 
 void MainWindow::on_actionExit_triggered()

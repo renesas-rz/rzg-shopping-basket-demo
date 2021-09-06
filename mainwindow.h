@@ -99,6 +99,7 @@ private:
     QElapsedTimer *fpsTimer;
     int imageWidth;
     int imageHeight;
+    bool webcamDisconnect;
 };
 
 #endif // MAINWINDOW_H
