@@ -1,6 +1,6 @@
 # RZ/G Shopping Basket Demo Application Source Code
 
-This repository contains the code required to build the application demo. This demo requires [TensorFlow](https://github.com/tensorflow/tensorflow/tree/r1.10) and [OpenCV](https://opencv.org/).
+This repository contains the code required to build the application demo. This demo requires [TensorFlow](https://github.com/tensorflow/tensorflow/tree/v2.3.1) and [OpenCV](https://opencv.org/).
 
 ## Manual Build Instructions
 ### RZ/G2
