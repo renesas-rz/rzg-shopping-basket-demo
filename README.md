@@ -7,7 +7,7 @@ This repository contains the code required to build the application demo. This d
 1. Have a suitable cross toolchain by building `bitbake core-image-qt-sdk -c populate_sdk`
 with yocto meta layers described in [meta-rzg2](https://github.com/renesas-rz/meta-rzg2)
 and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.conf` files from meta-tensorfow-lite).
-2. Install cross toolchain with `sudo sh ./poky-glibc-x86_64-core-image-qt-sdk-aarch64-toolchain-2.4.3.sh`.
+2. Install cross toolchain with `sudo sh ./poky-glibc-x86_64-core-image-qt-sdk-aarch64-toolchain-<SDK Version>.sh`.
 3. Set up environment variables with `source /<SDK location>/environment-setup-aarch64-poky-linux`.
 4. Run `qmake`.
 5. Run `make`.
