@@ -25,3 +25,7 @@
 hihope-rzg2m_shopping-basket:
   image: gitlab.renesas.solutions:5050/spl2/continuous-integration/dockerfiles:ubuntu-16.04-latest
   extends: .app-build
+
+smarc-rzg2l_shopping-basket:
+  image: gitlab.renesas.solutions:5050/spl2/continuous-integration/dockerfiles:ubuntu-20.04-latest
+  extends: .app-build
