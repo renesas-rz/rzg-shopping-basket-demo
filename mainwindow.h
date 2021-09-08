@@ -22,6 +22,9 @@
 
 #define CPU_MODEL_NAME "shoppingBasketDemo.tflite"
 
+#define G2L_HW_INFO "Hardware Information\n\nBoard: RZ/G2L smarc-rzg2l-evk\nCPUs: 2x Arm Cortex-A55\nDDR: 2GB"
+#define G2M_HW_INFO "Hardware Information\n\nBoard: RZ/G2M hihope-rzg2m\nCPUs: 2x Arm Cortex-A57, 4x Arm Cortex-A53\nDDR: 4GB"
+#define HW_INFO_WARNING "Unknown Board!"
 #define IMAGE_DIRECTORY "sample_images"
 #define TEXT_INFERENCE "Inference Time: "
 #define TEXT_FPS "Total FPS: "
@@ -77,6 +80,7 @@ private slots:
     void webcamNotConnected();
     void setImageSize();
     void on_actionDisconnect_triggered();
+    void on_actionHardware_triggered();
 
 private:
     void drawBoxes();
@@ -96,6 +100,7 @@ private:
     QThread *opencvThread, *tfliteThread;
     QEventLoop *qeventLoop;
     QStringList labelListSorted;
+    QString boardInfo;
     QString webcamName;
     QString modelPath;
     static const QStringList labelList;

@@ -338,6 +338,7 @@
     <property name="title">
      <string>About</string>
     </property>
+    <addaction name="actionHardware"/>
     <addaction name="actionLicense"/>
     <addaction name="actionExit"/>
    </widget>
@@ -396,6 +397,11 @@
    </property>
    <property name="toolTip">
     <string>ArmNN Delegate</string>
+   </property>
+  </action>
+  <action name="actionHardware">
+   <property name="text">
+    <string>Hardware</string>
    </property>
   </action>
  </widget>

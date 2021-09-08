@@ -25,6 +25,7 @@
 #include <QTimer>
 #include <QImageReader>
 #include <QElapsedTimer>
+#include <QSysInfo>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -96,6 +97,19 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     createTfThread();
 
     fpsTimer = new QElapsedTimer();
+
+    QSysInfo systemInfo;
+
+    if (systemInfo.machineHostName() == "hihope-rzg2m") {
+        setWindowTitle("Shopping Basket Demo - RZ/G2M");
+        boardInfo = G2M_HW_INFO;
+    } else if (systemInfo.machineHostName() == "smarc-rzg2l") {
+        setWindowTitle("Shopping Basket Demo - RZ/G2L");
+        boardInfo = G2L_HW_INFO;
+    } else {
+        setWindowTitle("Shopping Basket Demo");
+        boardInfo = HW_INFO_WARNING;
+    }
 }
 
 void MainWindow::createTfThread()
@@ -388,6 +402,13 @@ void MainWindow::on_actionLicense_triggered()
                              "You should have received a copy of the GNU General Public License "
                              "along with the RZG Shopping Basket Demo. If not, see https://www.gnu.org/licenses."
                              , QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+    msgBox->show();
+}
+
+void MainWindow::on_actionHardware_triggered()
+{
+    QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, "Information", boardInfo,
+                                 QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
     msgBox->show();
 }
 
