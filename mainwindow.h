@@ -24,7 +24,7 @@
 
 #define IMAGE_DIRECTORY "sample_images"
 #define TEXT_INFERENCE "Inference Time: "
-#define TEXT_FPS "FPS: "
+#define TEXT_FPS "Total FPS: "
 
 #define TABLE_COLUMN_WIDTH 180
 #define GRAPHICS_VIEW_WIDTH_4K 700 //This is for the 4k resolution
