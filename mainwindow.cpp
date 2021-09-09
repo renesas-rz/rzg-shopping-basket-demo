@@ -258,7 +258,6 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
             image = QPixmap::fromImage(receivedImage);
             scene->clear();
             image.scaled(ui->graphicsView->width(), ui->graphicsView->height(), Qt::KeepAspectRatio);
-            drawFPS(fpsTimer->restart());
             scene->addPixmap(image);
             scene->setSceneRect(image.rect());
             QMetaObject::invokeMethod(tfWorker, "process");
@@ -311,8 +310,10 @@ void MainWindow::showImage(const QImage& imageToShow)
     if ((imageNew.width() != imageWidth || imageNew.height() != imageHeight) && imageNew.depth() > 0)
         imageNew = imageNew.scaled(imageWidth, imageHeight);
 
-    if (ui->pushButtonWebcam->isChecked())
+    if (ui->pushButtonWebcam->isChecked()) {
         imageToSend = imageNew;
+        drawFPS(fpsTimer->restart());
+    }
 
     if (ui->pushButtonWebcam->isChecked() && !ui->checkBoxContinuous->isChecked()) {
         image = QPixmap::fromImage(imageToSend);
