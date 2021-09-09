@@ -373,6 +373,8 @@ void MainWindow::pushButtonWebcamCheck(bool webcamButtonChecked)
 
 void MainWindow::webcamInitStatus(bool webcamStatus)
 {
+    webcamDisconnect = false;
+
     if (!webcamStatus) {
         if (webcamName.isEmpty())
             webcamNotConnected();
@@ -382,7 +384,6 @@ void MainWindow::webcamInitStatus(bool webcamStatus)
         ui->pushButtonCapture->setEnabled(true);
         ui->pushButtonRun->setEnabled(true);
         cvWorker->checkWebcam();
-        webcamDisconnect = false;
     }
 }
 
