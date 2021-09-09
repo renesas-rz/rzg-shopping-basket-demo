@@ -94,6 +94,8 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
 
     qRegisterMetaType<QVector<float> >("QVector<float>");
 
+    tfliteThread = new QThread();
+    tfliteThread->setObjectName("tfliteThread");
     createTfThread();
 
     fpsTimer = new QElapsedTimer();
@@ -114,10 +116,8 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
 
 void MainWindow::createTfThread()
 {
-    tfliteThread = new QThread();
-    tfliteThread->setObjectName("tfliteThread");
-    tfliteThread->start();
     tfWorker = new tfliteWorker(modelPath, useArmNNDelegate);
+    tfliteThread->start();
     tfWorker->moveToThread(tfliteThread);
 
     connect(tfWorker, SIGNAL(requestImage()), this, SLOT(receiveRequest()));
@@ -464,7 +464,7 @@ void MainWindow::on_actionEnable_ArmNN_Delegate_triggered()
     if(!tfliteThread->wait(800)) // Allow time for the TfLite thread to finish
         qWarning("warning: could not recreate TfLite Thread");
 
-    tfliteThread->deleteLater();
+    delete tfWorker;
     createTfThread();
 }
 
