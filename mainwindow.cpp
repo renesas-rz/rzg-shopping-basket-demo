@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     webcamName = cameraLocation;
     modelPath = modelLocation;
     useArmNNDelegate = true;
+    int inferenceThreads;
 
     ui->setupUi(this);
     QMainWindow::showMaximized();
@@ -94,10 +95,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
 
     qRegisterMetaType<QVector<float> >("QVector<float>");
 
-    tfliteThread = new QThread();
-    tfliteThread->setObjectName("tfliteThread");
-    createTfThread();
-
     fpsTimer = new QElapsedTimer();
 
     QSysInfo systemInfo;
@@ -105,18 +102,27 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     if (systemInfo.machineHostName() == "hihope-rzg2m") {
         setWindowTitle("Shopping Basket Demo - RZ/G2M");
         boardInfo = G2M_HW_INFO;
+        inferenceThreads = 2;
     } else if (systemInfo.machineHostName() == "smarc-rzg2l") {
         setWindowTitle("Shopping Basket Demo - RZ/G2L");
         boardInfo = G2L_HW_INFO;
+        inferenceThreads = 1;
     } else {
         setWindowTitle("Shopping Basket Demo");
         boardInfo = HW_INFO_WARNING;
+        inferenceThreads = 2;
     }
+    ui->inferenceThreadCount->setValue(inferenceThreads);
+
+    tfliteThread = new QThread();
+    tfliteThread->setObjectName("tfliteThread");
+    createTfThread();
 }
 
 void MainWindow::createTfThread()
 {
-    tfWorker = new tfliteWorker(modelPath, useArmNNDelegate);
+    int inferenceThreads = ui->inferenceThreadCount->value();
+    tfWorker = new tfliteWorker(modelPath, useArmNNDelegate, inferenceThreads);
     tfliteThread->start();
     tfWorker->moveToThread(tfliteThread);
 

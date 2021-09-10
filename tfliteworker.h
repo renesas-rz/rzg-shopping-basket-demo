@@ -26,14 +26,13 @@
 
 #define DETECT_THRESHOLD 0.5
 #define BITS_TO_BYTE 8
-#define DEFAULT_NUM_THREADS 2
 
 class tfliteWorker : public QObject
 {
     Q_OBJECT
 
 public:
-    tfliteWorker(QString modelLocation, bool armnnDelegate);
+    tfliteWorker(QString modelLocation, bool armnnDelegate, int defaultThreads);
 
 signals:
     void sendOutputTensor(const QVector<float>&, int, const QImage&);

@@ -29,12 +29,12 @@
 #include <delegate/DelegateOptions.hpp>
 #endif
 
-tfliteWorker::tfliteWorker(QString modelLocation, bool armnnDelegate)
+tfliteWorker::tfliteWorker(QString modelLocation, bool armnnDelegate, int defaultThreads)
 {
     tflite::ops::builtin::BuiltinOpResolver tfliteResolver;
     TfLiteIntArray *wantedDimensions;
 
-    numberOfInferenceThreads = DEFAULT_NUM_THREADS;
+    numberOfInferenceThreads = defaultThreads;
 
     tfliteModel = tflite::FlatBufferModel::BuildFromFile(modelLocation.toStdString().c_str());
     tflite::InterpreterBuilder(*tfliteModel, tfliteResolver) (&tfliteInterpreter);
