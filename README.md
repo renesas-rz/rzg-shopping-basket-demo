@@ -33,7 +33,7 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     -D WITH_QT=ON \
     -D WITH_GSTREAMER=ON ..
     make -j$(nproc)
-    make -j$(nproc) install
+    sudo make -j$(nproc) install
     ```
 
 3. Build and install [TensorFlow lite v2.3.1](https://github.com/tensorflow/tensorflow/tree/v2.3.1)
