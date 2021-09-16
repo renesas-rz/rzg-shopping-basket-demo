@@ -124,6 +124,21 @@ void MainWindow::createTfThread()
     tfliteThread->start();
     tfWorker->moveToThread(tfliteThread);
 
+    /* ArmNN Delegate sets the inference threads to amount of CPU cores
+     * of the same type logically group first, which for the RZ/G2L and
+     * RZ/G2M is 2 */
+    if(useArmNNDelegate) {
+        ui->inferenceThreadCount->setEnabled(false);
+        ui->inferenceThreadCount->setValue(2);
+    } else {
+        ui->inferenceThreadCount->setEnabled(true);
+
+        if(boardInfo.contains(G2L_HW_INFO))
+            ui->inferenceThreadCount->setValue(1);
+        else
+            ui->inferenceThreadCount->setValue(2);
+    }
+
     connect(tfWorker, SIGNAL(requestImage()), this, SLOT(receiveRequest()));
     connect(this, SIGNAL(sendImage(const QImage&)), tfWorker, SLOT(receiveImage(const QImage&)));
     connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const QImage&)),
