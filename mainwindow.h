@@ -86,6 +86,7 @@ private:
     void drawBoxes();
     void drawFPS(qint64 timeElapsed);
     void createTfThread();
+    void setApplicationSize();
 
     Ui::MainWindow *ui;
     bool useArmNNDelegate;

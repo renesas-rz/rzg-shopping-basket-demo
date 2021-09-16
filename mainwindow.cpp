@@ -25,6 +25,7 @@
 #include <QTimer>
 #include <QImageReader>
 #include <QElapsedTimer>
+#include <QScreen>
 #include <QSysInfo>
 
 #include "mainwindow.h"
@@ -53,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     int inferenceThreads;
 
     ui->setupUi(this);
-    QMainWindow::showMaximized();
+    setApplicationSize();
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
 
@@ -69,9 +70,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     double column1Width = ui->tableWidget->geometry().width() * 0.8;
     ui->tableWidget->setColumnWidth(0, column1Width);
     ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
-    if (ui->graphicsView->width() > GRAPHICS_VIEW_WIDTH_4K) {
-        ui->tableWidget->verticalHeader()->setDefaultSectionSize(60);
-    }
 
     ui->labelInference->setText(TEXT_INFERENCE);
     ui->labelFps->setText(TEXT_FPS);
@@ -131,6 +129,34 @@ void MainWindow::createTfThread()
     connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const QImage&)),
             this, SLOT(receiveOutputTensor(const QVector<float>&, int, const QImage&)));
     connect(this, SIGNAL(sendNumOfInferenceThreads(int)), tfWorker, SLOT(receiveNumOfInferenceThreads(int)));
+}
+
+void MainWindow::setApplicationSize()
+{
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+    int height = screenGeometry.height();
+    int width = screenGeometry.width();
+
+    if (width == 3840 && height == 2160) { // resolution - 3840x2160
+        this->resize(2700, 1350);
+        ui->tableWidget->verticalHeader()->setDefaultSectionSize(60);
+    } else if (width == 1920 && height == 1080) { // resolution - 1920x1080
+        this->resize(1400, 700);
+    } else if (width == 1280 && height == 720) { // resolution - 1280x720
+        QMainWindow::showMaximized();
+        ui->tableWidget->verticalHeader()->setDefaultSectionSize(25);
+    } else if (width == 1152 && height == 864) { // resolution - 1152x864
+        this->resize(700, 525);
+        ui->tableWidget->setFixedWidth(350);
+        ui->tableWidget->verticalHeader()->setDefaultSectionSize(25);
+    } else if (width == 1024 && height == 768) { // resolution - 1024x768
+        this->resize(900, 450);
+        ui->tableWidget->setFixedWidth(300);
+        ui->tableWidget->verticalHeader()->setDefaultSectionSize(25);
+    } else {
+        QMainWindow::showMaximized();
+    }
 }
 
 void MainWindow::on_pushButtonImage_clicked()
