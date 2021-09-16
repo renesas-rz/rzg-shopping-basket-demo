@@ -32,8 +32,8 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     -D WITH_V4L=ON \
     -D WITH_QT=ON \
     -D WITH_GSTREAMER=ON ..
-    make
-    make install
+    make -j$(nproc)
+    make -j$(nproc) install
     ```
 
 3. Build and install [TensorFlow lite v2.3.1](https://github.com/tensorflow/tensorflow/tree/v2.3.1).
@@ -42,12 +42,12 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     cd tensorflow/
     git checkout v2.3.1
     ./tensorflow/lite/tools/make/download_dependencies.sh
-    make -f ./tensorflow/lite/tools/make/Makefile
+    make -j$(nproc) -f ./tensorflow/lite/tools/make/Makefile
     sudo cp ./tensorflow/lite/tools/make/gen/linux_x86_64/lib/libtensorflow-lite.a /usr/local/lib/
     sudo cp -r tensorflow/ /usr/local/include
     sudo cp -r tensorflow/lite/tools/make/downloads/flatbuffers/include/flatbuffers /usr/local/include
     ```
 4. Copy `shoppingBasketDemo.tflite` to `/opt/Shopping_Basket_Demo`.
 5. Run `qmake`
-6. Run `make`
+6. Run `make -j$(nproc)`
 7. Run the app with `./supermarket_demo_app`
