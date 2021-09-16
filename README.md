@@ -21,7 +21,7 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     sudo apt install cmake qtbase5-dev qtdeclarative5-dev qt5-default qtmultimedia5-dev qtcreator
     ```
 
-2. Install opencv core and opencv videoio, make sure your version has Gstreamer enabled. Otherwise build and install [OpenCV](https://github.com/opencv/opencv.git).
+2. Install opencv core and opencv videoio, make sure your version has Gstreamer enabled. Otherwise build and install [OpenCV](https://github.com/opencv/opencv.git)
     ```
     git clone  https://github.com/opencv/opencv.git
     cd opencv/
@@ -36,7 +36,7 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     make -j$(nproc) install
     ```
 
-3. Build and install [TensorFlow lite v2.3.1](https://github.com/tensorflow/tensorflow/tree/v2.3.1).
+3. Build and install [TensorFlow lite v2.3.1](https://github.com/tensorflow/tensorflow/tree/v2.3.1)
     ```
     git clone  https://github.com/tensorflow/tensorflow.git
     cd tensorflow/
@@ -47,7 +47,7 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     sudo cp -r tensorflow/ /usr/local/include
     sudo cp -r tensorflow/lite/tools/make/downloads/flatbuffers/include/flatbuffers /usr/local/include
     ```
-4. Copy `shoppingBasketDemo.tflite` to `/opt/Shopping_Basket_Demo`.
+4. Copy [shoppingBasketDemo.tflite](https://github.com/renesas-rz/meta-renesas-ai-demos/blob/master/meta-shopping-basket-demo/recipes-ai/shopping-basket-demo/files/shoppingBasketDemo.tflite) to `/opt/Shopping_Basket_Demo`
 5. Run `qmake`
 6. Run `make -j$(nproc)`
 7. Run the app with `./supermarket_demo_app`
