@@ -47,7 +47,20 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     sudo cp -r tensorflow/ /usr/local/include
     sudo cp -r tensorflow/lite/tools/make/downloads/flatbuffers/include/flatbuffers /usr/local/include
     ```
+
 4. Copy [shoppingBasketDemo.tflite](https://github.com/renesas-rz/meta-renesas-ai-demos/blob/master/meta-shopping-basket-demo/recipes-ai/shopping-basket-demo/files/shoppingBasketDemo.tflite) to `/opt/Shopping_Basket_Demo`
-5. Run `qmake`
-6. Run `make -j$(nproc)`
-7. Run the app with `./supermarket_demo_app`
+    ```
+    sudo mkdir /opt/Shopping_Basket_Demo
+    cd /opt/Shopping_Basket_Demo
+    sudo wget https://github.com/renesas-rz/meta-renesas-ai-demos/raw/master/meta-shopping-basket-demo/recipes-ai/shopping-basket-demo/files/shoppingBasketDemo.tflite
+    ```
+
+5. Build demo application
+    ```
+    cd rzg-shopping-basket-demo
+    qmake
+    make -j$(nproc)
+    sudo cp supermarket_demo_app /opt/Shopping_Basket_Demo
+    ```
+
+6. Run the demo with `/opt/Shopping_Basket_Demo/supermarket_demo_app`
