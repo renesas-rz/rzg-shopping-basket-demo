@@ -28,7 +28,7 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     mkdir build/
     cd build/
     cmake -D CMAKE_BUILD_TYPE=RELEASE \
-    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D CMAKE_INSTALL_PREFIX=/usr \
     -D WITH_V4L=ON \
     -D WITH_QT=ON \
     -D WITH_GSTREAMER=ON ..
