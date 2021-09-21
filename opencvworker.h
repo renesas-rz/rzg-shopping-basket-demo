@@ -36,7 +36,7 @@ public:
     void checkWebcam();
 
 signals:
-    void sendImage(const QImage&);
+    void sendImage(const cv::Mat&);
     void webcamInit(bool webcamInitialised);
 
 private:

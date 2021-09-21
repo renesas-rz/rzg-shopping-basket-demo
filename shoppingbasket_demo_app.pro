@@ -42,6 +42,8 @@ INCLUDEPATH += \
 LIBS += \
     -L $$(SDKTARGETSYSROOT)/usr/lib64 \
     -lopencv_core \
+    -lopencv_imgproc \
+    -lopencv_imgcodecs \
     -lopencv_videoio \
     -ltensorflow-lite \
     -ldl \

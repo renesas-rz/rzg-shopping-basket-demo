@@ -28,6 +28,9 @@
 #include <QScreen>
 #include <QSysInfo>
 
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "tfliteworker.h"
@@ -80,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     cvWorker = new opencvWorker();
     cvWorker->moveToThread(opencvThread);
 
-    connect(cvWorker, SIGNAL(sendImage(const QImage&)), this, SLOT(showImage(const QImage&)));
+    connect(cvWorker, SIGNAL(sendImage(const cv::Mat&)), this, SLOT(showImage(const cv::Mat&)));
     connect(cvWorker, SIGNAL(webcamInit(bool)), this, SLOT(webcamInitStatus(bool)));
 
     QMetaObject::invokeMethod(cvWorker, "initialiseWebcam", Qt::AutoConnection, Q_ARG(QString, webcamName));
@@ -121,9 +124,9 @@ void MainWindow::createTfThread()
      * RZ/G2M is 2 */
 
     connect(tfWorker, SIGNAL(requestImage()), this, SLOT(receiveRequest()));
-    connect(this, SIGNAL(sendImage(const QImage&)), tfWorker, SLOT(receiveImage(const QImage&)));
-    connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const QImage&)),
-            this, SLOT(receiveOutputTensor(const QVector<float>&, int, const QImage&)));
+    connect(this, SIGNAL(sendImage(const cv::Mat&)), tfWorker, SLOT(receiveImage(const cv::Mat&)));
+    connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const cv::Mat&)),
+            this, SLOT(receiveOutputTensor(const QVector<float>&, int, const cv::Mat&)));
     connect(this, SIGNAL(sendNumOfInferenceThreads(int)), tfWorker, SLOT(receiveNumOfInferenceThreads(int)));
 }
 
@@ -157,10 +160,10 @@ void MainWindow::setApplicationSize()
 
 void MainWindow::receiveRequest()
 {
-    sendImage(imageToSend);
+    sendImage(matToSend);
 }
 
-void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int receivedTimeElapsed, const QImage& receivedImage)
+void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int receivedTimeElapsed, const cv::Mat& receivedMat)
 {
     QTableWidgetItem* item;
     QTableWidgetItem* price;
@@ -204,11 +207,8 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
         ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1, item);
 
         if (!ui->pushButtonProcessBasket->isEnabled()) {
-            image = QPixmap::fromImage(receivedImage);
-            scene->clear();
-            image.scaled(ui->graphicsView->width(), ui->graphicsView->height(), Qt::KeepAspectRatio);
-            scene->addPixmap(image);
-            scene->setSceneRect(image.rect());
+            drawMatToView(receivedMat);
+
             QMetaObject::invokeMethod(tfWorker, "process");
         }
 
@@ -216,11 +216,11 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
     }
 }
 
-void MainWindow::showImage(const QImage& imageToShow)
+void MainWindow::showImage(const cv::Mat& matToShow)
 {
     QMetaObject::invokeMethod(cvWorker, "readFrame");
 
-    imageNew = imageToShow;
+    matNew = matToShow;
     setImageSize();
 
     imageNew = imageNew.scaled(imageWidth, imageHeight);
@@ -338,6 +338,35 @@ void MainWindow::webcamNotConnected()
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(0);
     ui->labelInference->setText(TEXT_INFERENCE);
+}
+
+void MainWindow::drawMatToView(const cv::Mat& matInput)
+{
+    QImage imageToDraw;
+
+    imageToDraw = matToQImage(matInput);
+
+    image = QPixmap::fromImage(imageToDraw);
+    scene->clear();
+    scene->addPixmap(image);
+    scene->setSceneRect(image.rect());
+}
+
+QImage MainWindow::matToQImage(const cv::Mat& matToConvert)
+{
+    cv::Mat matToConvertRGB;
+    QImage convertedImage;
+
+    if (matToConvert.empty())
+        return QImage(nullptr);
+
+    cv::cvtColor(matToConvert, matToConvertRGB, cv::COLOR_BGR2RGB);
+
+    convertedImage = QImage(matToConvertRGB.data, matToConvertRGB.cols,
+                     matToConvertRGB.rows, int(matToConvertRGB.step),
+                        QImage::Format_RGB888).copy();
+
+    return convertedImage;
 }
 
 void MainWindow::on_actionDisconnect_triggered()

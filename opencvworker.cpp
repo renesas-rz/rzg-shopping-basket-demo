@@ -18,9 +18,10 @@
 
 #include <QCamera>
 #include <QCameraImageCapture>
-#include <QImage>
 
 #include "opencvworker.h"
+
+#include <opencv2/imgproc/imgproc.hpp>
 
 void opencvWorker::initialiseWebcam(QString cameraLocation)
 {
@@ -71,19 +72,14 @@ void opencvWorker::getResolution()
 
 void opencvWorker::readFrame()
 {
-    QImage videoImage;
-
     if(!videoCapture->read(videoFrame)) {
-            webcamInitialised = false;
-            videoCapture->release();
-            emit webcamInit(webcamInitialised);
-            return;
+        webcamInitialised = false;
+        videoCapture->release();
+        emit webcamInit(webcamInitialised);
+        return;
     }
 
-    videoImage = QImage(videoFrame.data, videoFrame.cols,
-                     videoFrame.rows, int(videoFrame.step), QImage::Format_RGB888).rgbSwapped();
-    videoFrame.release();
-    emit sendImage(videoImage);
+    emit sendImage(videoFrame);
 }
 
 void opencvWorker::checkWebcam()

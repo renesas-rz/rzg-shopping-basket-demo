@@ -24,6 +24,8 @@
 #include <QObject>
 #include <QVector>
 
+#include <opencv2/videoio.hpp>
+
 #define DETECT_THRESHOLD 0.5
 #define BITS_TO_BYTE 8
 
@@ -35,7 +37,7 @@ public:
     tfliteWorker(QString modelLocation, bool armnnDelegate, int defaultThreads);
 
 signals:
-    void sendOutputTensor(const QVector<float>&, int, const QImage&);
+    void sendOutputTensor(const QVector<float>&, int, const cv::Mat&);
     void requestImage();
 
 private:
@@ -48,7 +50,7 @@ private:
 
 private slots:
     void process();
-    void receiveImage(const QImage& sentImage);
+    void receiveImage(const cv::Mat&);
     void receiveNumOfInferenceThreads(int threads);
 };
 

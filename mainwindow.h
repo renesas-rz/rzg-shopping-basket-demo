@@ -19,6 +19,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <opencv2/videoio.hpp>
 
 #define CPU_MODEL_NAME "shoppingBasketDemo.tflite"
 
@@ -53,7 +54,7 @@ public:
     MainWindow(QWidget *parent, QString cameraLocation, QString modelLocation);
 
 signals:
-    void sendImage(const QImage&);
+    void sendImage(const cv::Mat&);
     void sendNumOfInferenceThreads(int threads);
     void imageLoaded();
     void sendInitWebcam();
@@ -62,11 +63,12 @@ signals:
 
 public slots:
     void receiveRequest();
-    void showImage(const QImage& imageToShow);
+    void showImage(const cv::Mat& matToShow);
+    void drawMatToView(const cv::Mat& matInput);
     void on_actionExit_triggered();
 
 private slots:
-    void receiveOutputTensor (const QVector<float>& receivedTensor, int recievedTimeElapsed, const QImage &receivedImage);
+    void receiveOutputTensor (const QVector<float>& receivedTensor, int recievedTimeElapsed, const cv::Mat&);
     void webcamInitStatus (bool webcamStatus);
     void on_pushButtonProcessBasket_clicked();
     void on_actionLicense_triggered();
@@ -82,6 +84,7 @@ private:
     void drawFPS(qint64 timeElapsed);
     void createTfThread();
     void setApplicationSize();
+    QImage matToQImage(const cv::Mat& matToConvert);
 
     Ui::MainWindow *ui;
     bool useArmNNDelegate;
@@ -105,6 +108,8 @@ private:
     int imageWidth;
     int imageHeight;
     bool webcamDisconnect;
+    cv::Mat matToSend;
+    cv::Mat matNew;
 };
 
 #endif // MAINWINDOW_H

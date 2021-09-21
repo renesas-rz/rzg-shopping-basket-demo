@@ -16,11 +16,11 @@
  * along with the RZG Shopping Basket Demo.  If not, see <https://www.gnu.org/licenses/>.
  *****************************************************************************************/
 
-#include <QImage>
-
 #include <chrono>
 
 #include "tfliteworker.h"
+
+#include <opencv2/imgproc/imgproc.hpp>
 
 #ifdef SBD_ARM64
 #include <armnn/ArmNN.hpp>
@@ -77,32 +77,24 @@ void tfliteWorker::process()
  * is removed. Input the data to the tensor and output the results into a vector.
  * Also measure the time it takes for this function to complete
  */
-void tfliteWorker::receiveImage(const QImage& sentImage)
+void tfliteWorker::receiveImage(const cv::Mat& sentMat)
 {
-    QImage swappedImage;
-    unsigned char* imageData;
-    unsigned long swappedImageSize;
-    std::vector<uint8_t> imageDataIn;
+    cv::Mat sentImageMat;
     std::chrono::high_resolution_clock::time_point startTime, stopTime;
     int timeElapsed;
-    uint8_t* input;
+    int input;
 
-    swappedImage = sentImage.scaled(wantedHeight, wantedWidth, Qt::IgnoreAspectRatio,
-                                    Qt::SmoothTransformation).rgbSwapped();
-    imageData = swappedImage.bits();
-    imageDataIn.resize(unsigned(swappedImage.height() * swappedImage.width() * wantedChannels));
-    swappedImageSize = unsigned(swappedImage.height() * swappedImage.width() * swappedImage.depth()) / BITS_TO_BYTE;
-
-    for (unsigned long i = 0, j = 0; i < swappedImageSize; i++) {
-        if (i%4 == 3)
-            continue;
-        imageDataIn[j++] = imageData[i];
+    if(sentMat.empty()) {
+        qWarning("Received invalid image path, cannot run inference");
+        return;
     }
 
-    input = tfliteInterpreter->typed_input_tensor<uint8_t>(0);
+    input = tfliteInterpreter->inputs()[0];
 
-    for (unsigned int i = 0; i < imageDataIn.size(); i++)
-        input[i] = uint8_t(imageDataIn.data()[i]);
+    cv::resize(sentMat, sentImageMat, cv::Size(wantedHeight, wantedWidth));
+    cv::cvtColor(sentImageMat, sentImageMat, cv::COLOR_BGR2RGB);
+
+    memcpy(tfliteInterpreter->typed_tensor<uint8_t>(input), sentImageMat.data, sentImageMat.total() * sentImageMat.elemSize());
 
     startTime = std::chrono::high_resolution_clock::now();
     tfliteInterpreter->Invoke();
@@ -119,7 +111,7 @@ void tfliteWorker::receiveImage(const QImage& sentImage)
     }
 
     timeElapsed = int(std::chrono::duration_cast<std::chrono::milliseconds>(stopTime - startTime).count());
-    emit sendOutputTensor(outputTensor, timeElapsed, sentImage);
+    emit sendOutputTensor(outputTensor, timeElapsed, sentMat);
     outputTensor.clear();
 }
 
