@@ -71,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
 
     ui->labelInference->setText(TEXT_INFERENCE);
+    ui->labelTotalItems->setText(TEXT_TOTAL_ITEMS);
 
     qRegisterMetaType<cv::Mat>();
     opencvThread = new QThread();
@@ -258,6 +259,7 @@ void MainWindow::drawBoxes()
 
         scene->addRect(double(xmin), double(ymin), double(xmax - xmin), double(ymax - ymin), pen, brush);
     }
+    ui->labelTotalItems->setText(TEXT_TOTAL_ITEMS + QString("%1").arg(outputTensor.size() / 6));
 }
 
 void MainWindow::on_pushButtonProcessBasket_clicked()
