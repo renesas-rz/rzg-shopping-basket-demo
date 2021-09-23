@@ -62,18 +62,12 @@ signals:
 public slots:
     void receiveRequest();
     void showImage(const QImage& imageToShow);
-    void pushButtonWebcamCheck(bool webcamButtonChecked);
     void on_actionExit_triggered();
 
 private slots:
     void receiveOutputTensor (const QVector<float>& receivedTensor, int recievedTimeElapsed, const QImage &receivedImage);
     void webcamInitStatus (bool webcamStatus);
-    void on_pushButtonImage_clicked();
-    void on_pushButtonRun_clicked();
-    void on_inferenceThreadCount_valueChanged(int value);
-    void on_pushButtonStop_clicked();
-    void on_pushButtonCapture_clicked();
-    void on_pushButtonWebcam_clicked();
+    void on_pushButtonProcessBasket_clicked();
     void on_actionLicense_triggered();
     void on_actionReset_triggered();
     void on_actionEnable_ArmNN_Delegate_triggered();

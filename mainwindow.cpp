@@ -51,7 +51,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     webcamName = cameraLocation;
     modelPath = modelLocation;
     useArmNNDelegate = true;
-    int inferenceThreads;
 
     ui->setupUi(this);
     setApplicationSize();
@@ -72,10 +71,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
 
     ui->labelInference->setText(TEXT_INFERENCE);
-    ui->labelFps->setText(TEXT_FPS);
-    ui->checkBoxContinuous->setEnabled(false);
-    ui->pushButtonWebcam->setEnabled(false);
-    ui->pushButtonCapture->setEnabled(false);
 
     qRegisterMetaType<cv::Mat>();
     opencvThread = new QThread();
@@ -84,8 +79,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     cvWorker = new opencvWorker();
     cvWorker->moveToThread(opencvThread);
 
-    connect(ui->pushButtonWebcam, SIGNAL(toggled(bool)), this,
-            SLOT(pushButtonWebcamCheck(bool)));
     connect(cvWorker, SIGNAL(sendImage(const QImage&)), this, SLOT(showImage(const QImage&)));
     connect(cvWorker, SIGNAL(webcamInit(bool)), this, SLOT(webcamInitStatus(bool)));
 
@@ -100,26 +93,24 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     if (systemInfo.machineHostName() == "hihope-rzg2m") {
         setWindowTitle("Shopping Basket Demo - RZ/G2M");
         boardInfo = G2M_HW_INFO;
-        inferenceThreads = 2;
     } else if (systemInfo.machineHostName() == "smarc-rzg2l") {
         setWindowTitle("Shopping Basket Demo - RZ/G2L");
         boardInfo = G2L_HW_INFO;
-        inferenceThreads = 1;
     } else {
         setWindowTitle("Shopping Basket Demo");
-        boardInfo = HW_INFO_WARNING;
-        inferenceThreads = 2;
+        boardInfo = HW_INFO_WARNING;;
     }
-    ui->inferenceThreadCount->setValue(inferenceThreads);
 
     tfliteThread = new QThread();
     tfliteThread->setObjectName("tfliteThread");
     createTfThread();
+
+    QMetaObject::invokeMethod(cvWorker, "readFrame");
 }
 
 void MainWindow::createTfThread()
 {
-    int inferenceThreads = ui->inferenceThreadCount->value();
+    int inferenceThreads = 2;
     tfWorker = new tfliteWorker(modelPath, useArmNNDelegate, inferenceThreads);
     tfliteThread->start();
     tfWorker->moveToThread(tfliteThread);
@@ -127,17 +118,6 @@ void MainWindow::createTfThread()
     /* ArmNN Delegate sets the inference threads to amount of CPU cores
      * of the same type logically group first, which for the RZ/G2L and
      * RZ/G2M is 2 */
-    if(useArmNNDelegate) {
-        ui->inferenceThreadCount->setEnabled(false);
-        ui->inferenceThreadCount->setValue(2);
-    } else {
-        ui->inferenceThreadCount->setEnabled(true);
-
-        if(boardInfo.contains(G2L_HW_INFO))
-            ui->inferenceThreadCount->setValue(1);
-        else
-            ui->inferenceThreadCount->setValue(2);
-    }
 
     connect(tfWorker, SIGNAL(requestImage()), this, SLOT(receiveRequest()));
     connect(this, SIGNAL(sendImage(const QImage&)), tfWorker, SLOT(receiveImage(const QImage&)));
@@ -174,74 +154,6 @@ void MainWindow::setApplicationSize()
     }
 }
 
-void MainWindow::on_pushButtonImage_clicked()
-{
-    qeventLoop = new QEventLoop;
-    QString fileName;
-    QStringList fileNames;
-    QFileDialog dialog(this);
-    QString imageFilter;
-
-    connect(this, SIGNAL(imageLoaded()), qeventLoop, SLOT(quit()));
-
-    on_pushButtonStop_clicked();
-    ui->pushButtonWebcam->setChecked(false);
-    outputTensor.clear();
-    ui->tableWidget->setRowCount(0);
-    setImageSize();
-    ui->labelInference->setText(TEXT_INFERENCE);
-    ui->labelFps->setText(TEXT_FPS);
-
-    dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setDirectory(IMAGE_DIRECTORY);
-
-    imageFilter = "Images (";
-    for (int i = 0; i < QImageReader::supportedImageFormats().count(); i++)
-        imageFilter += "*." + QImageReader::supportedImageFormats().at(i) + " ";
-
-    imageFilter +=")";
-
-    dialog.setNameFilter(imageFilter);
-    dialog.setViewMode(QFileDialog::Detail);
-
-    if (dialog.exec())
-        fileNames = dialog.selectedFiles();
-
-    if(fileNames.count() > 0)
-        fileName = fileNames.at(0);
-
-    if (!fileName.trimmed().isEmpty()) {
-        imageToSend.load(fileName);
-        if (imageToSend.width() != imageWidth || imageToSend.height() != imageHeight)
-            imageToSend = imageToSend.scaled(imageWidth, imageHeight);
-
-        image = QPixmap::fromImage(imageToSend);
-        scene->clear();
-        scene->addPixmap(image);
-        scene->setSceneRect(image.rect());
-    }
-
-    emit imageLoaded();
-    qeventLoop->exec();
-}
-
-void MainWindow::on_pushButtonRun_clicked()
-{
-    if (!(image.depth() > 0)) {
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "No source selected, please select an image.", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
-        msgBox->show();
-        return;
-    }
-
-    QMetaObject::invokeMethod(tfWorker, "process");
-    ui->pushButtonRun->setEnabled(false);
-}
-
-void MainWindow::on_inferenceThreadCount_valueChanged(int threads)
-{
-    emit sendNumOfInferenceThreads(threads);
-}
-
 void MainWindow::receiveRequest()
 {
     sendImage(imageToSend);
@@ -249,9 +161,6 @@ void MainWindow::receiveRequest()
 
 void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int receivedTimeElapsed, const QImage& receivedImage)
 {
-    if (ui->pushButtonRun->isEnabled())
-        return;
-
     QTableWidgetItem* item;
     QTableWidgetItem* price;
     float totalCost = 0;
@@ -293,9 +202,7 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
         item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
         ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1, item);
 
-        if (!ui->checkBoxContinuous->isChecked()) {
-            ui->pushButtonRun->setEnabled(true);
-        } else {
+        if (!ui->pushButtonProcessBasket->isEnabled()) {
             image = QPixmap::fromImage(receivedImage);
             scene->clear();
             image.scaled(ui->graphicsView->width(), ui->graphicsView->height(), Qt::KeepAspectRatio);
@@ -308,61 +215,22 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
     }
 }
 
-void MainWindow::on_pushButtonStop_clicked()
-{
-    ui->pushButtonRun->setEnabled(true);
-}
-
-void MainWindow::on_pushButtonCapture_clicked()
-{
-    on_pushButtonStop_clicked();
-    ui->pushButtonWebcam->setChecked(false);
-    outputTensor.clear();
-    ui->tableWidget->setRowCount(0);
-    ui->labelInference->setText(TEXT_INFERENCE);
-    ui->labelFps->setText(TEXT_FPS);
-
-    imageToSend = imageNew;
-    image = QPixmap::fromImage(imageToSend);
-    scene->clear();
-    scene->addPixmap(image);
-    scene->setSceneRect(image.rect());
-}
-
-void MainWindow::on_pushButtonWebcam_clicked()
-{
-    outputTensor.clear();
-    ui->tableWidget->setRowCount(0);
-    ui->labelInference->setText(TEXT_INFERENCE);
-    ui->labelFps->setText(TEXT_FPS);
-    fpsTimer->start();
-    if (ui->pushButtonWebcam->isChecked())
-        QMetaObject::invokeMethod(cvWorker, "readFrame");
-}
-
 void MainWindow::showImage(const QImage& imageToShow)
 {
-    if (ui->pushButtonWebcam->isEnabled())
-        QMetaObject::invokeMethod(cvWorker, "readFrame");
+    QMetaObject::invokeMethod(cvWorker, "readFrame");
 
     imageNew = imageToShow;
     setImageSize();
 
-    if ((imageNew.width() != imageWidth || imageNew.height() != imageHeight) && imageNew.depth() > 0)
-        imageNew = imageNew.scaled(imageWidth, imageHeight);
+    imageNew = imageNew.scaled(imageWidth, imageHeight);
 
-    if (ui->pushButtonWebcam->isChecked()) {
-        imageToSend = imageNew;
-        drawFPS(fpsTimer->restart());
-    }
+    imageToSend = imageNew;
 
-    if (ui->pushButtonWebcam->isChecked() && !ui->checkBoxContinuous->isChecked()) {
-        image = QPixmap::fromImage(imageToSend);
-        scene->clear();
-        scene->addPixmap(image);
-        scene->setSceneRect(image.rect());
-        drawBoxes();
-    }
+    image = QPixmap::fromImage(imageToSend);
+    scene->clear();
+    scene->addPixmap(image);
+    scene->setSceneRect(image.rect());
+    drawBoxes();
 }
 
 void MainWindow::drawBoxes()
@@ -392,25 +260,19 @@ void MainWindow::drawBoxes()
     }
 }
 
-void MainWindow::drawFPS(qint64 timeElapsed)
+void MainWindow::on_pushButtonProcessBasket_clicked()
 {
-    float fpsValue = 1000.0/timeElapsed;
-    ui->labelFps->setText(TEXT_FPS + QString::number(fpsValue, 'f', 1));
-}
+    outputTensor.clear();
+    ui->tableWidget->setRowCount(0);
+    ui->labelInference->setText(TEXT_INFERENCE);
 
-/*
- * If the webcam button is clicked
- * and the webcam button is checked (pressed down),
- * then enable the webcam continuous checkbox.
- */
-void MainWindow::pushButtonWebcamCheck(bool webcamButtonChecked)
-{
-    if (webcamButtonChecked) {
-        ui->checkBoxContinuous->setEnabled(true);
-    } else {
-        ui->checkBoxContinuous->setCheckState(Qt::Unchecked);
-        ui->checkBoxContinuous->setEnabled(false);
-    }
+    imageToSend = imageNew;
+    image = QPixmap::fromImage(imageToSend);
+    scene->clear();
+    scene->addPixmap(image);
+    scene->setSceneRect(image.rect());
+
+    QMetaObject::invokeMethod(tfWorker, "process");
 }
 
 void MainWindow::webcamInitStatus(bool webcamStatus)
@@ -420,11 +282,7 @@ void MainWindow::webcamInitStatus(bool webcamStatus)
     if (!webcamStatus) {
         if (webcamName.isEmpty())
             webcamNotConnected();
-        ui->pushButtonWebcam->setChecked(false);
     } else {
-        ui->pushButtonWebcam->setEnabled(true);
-        ui->pushButtonCapture->setEnabled(true);
-        ui->pushButtonRun->setEnabled(true);
         cvWorker->checkWebcam();
     }
 }
@@ -471,17 +329,13 @@ void MainWindow::on_actionReset_triggered()
 
 void MainWindow::webcamNotConnected()
 {
-    ui->pushButtonWebcam->setEnabled(false);
-    ui->pushButtonCapture->setEnabled(false);
     QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
     msgBox->show();
-    ui->pushButtonWebcam->setChecked(false);
     scene->clear();
     ui->graphicsView->setScene(scene);
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(0);
     ui->labelInference->setText(TEXT_INFERENCE);
-    ui->labelFps->setText(TEXT_FPS);
 }
 
 void MainWindow::on_actionDisconnect_triggered()
@@ -489,8 +343,7 @@ void MainWindow::on_actionDisconnect_triggered()
     webcamDisconnect = true;
     QMetaObject::invokeMethod(cvWorker, "disconnectWebcam");
 
-    if (!ui->checkBoxContinuous->isChecked())
-        webcamNotConnected();
+    webcamNotConnected();
 }
 
 void MainWindow::on_actionEnable_ArmNN_Delegate_triggered()
