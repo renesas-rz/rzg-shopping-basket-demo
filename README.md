@@ -11,9 +11,9 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
 3. Set up environment variables with `source /<SDK location>/environment-setup-aarch64-poky-linux`.
 4. Run `qmake`.
 5. Run `make`.
-6. Copy `supermarket_demo_app` to the root filesystem.
+6. Copy `shoppingbasket_demo_app` to the root filesystem.
 7. Copy `shoppingBasketDemo.tflite` to `/opt/Shopping_Basket_Demo`.
-8. Run the app with `./supermarket_demo_app`.
+8. Run the app with `./shoppingbasket_demo_app`.
 
 ### Ubuntu
 1. Install dependencies
@@ -60,7 +60,7 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     cd rzg-shopping-basket-demo
     qmake
     make -j$(nproc)
-    sudo cp supermarket_demo_app /opt/Shopping_Basket_Demo
+    sudo cp shoppingbasket_demo_app /opt/Shopping_Basket_Demo
     ```
 
-6. Run the demo with `/opt/Shopping_Basket_Demo/supermarket_demo_app`
+6. Run the demo with `/opt/Shopping_Basket_Demo/shoppingbasket_demo_app`
