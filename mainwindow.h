@@ -33,6 +33,7 @@
 
 #define TABLE_COLUMN_WIDTH 180
 #define GRAPHICS_VIEW_WIDTH_4K 700 //This is for the 4k resolution
+#define GRAPHICS_VIEW_EXCESS_SPACE 2 //Prevents the image from scaling outside the graphics view
 #define BOX_WIDTH 2
 #define BOX_COLOUR Qt::green
 #define TEXT_COLOUR Qt::green

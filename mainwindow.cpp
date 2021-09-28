@@ -329,6 +329,7 @@ void MainWindow::drawMatToView(const cv::Mat& matInput)
 
     image = QPixmap::fromImage(imageToDraw);
     scene->clear();
+    image = image.scaled(ui->graphicsView->width() - GRAPHICS_VIEW_EXCESS_SPACE, ui->graphicsView->height() - GRAPHICS_VIEW_EXCESS_SPACE);
     scene->addPixmap(image);
     scene->setSceneRect(image.rect());
 }
