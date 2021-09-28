@@ -23,6 +23,88 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 
+
+opencvWorker::opencvWorker(QString cameraLocation)
+{
+    webcamName = cameraLocation;
+
+    usingMipi = true;
+
+    if (usingMipi) {
+        std::string stdoutput;
+
+        /* We need to run this command only once */
+        if (runCommand(cameraInitialization, stdoutput))
+            qWarning("Cannot initialize the camera");
+    }
+
+    /* Define the format for the camera to use */
+    camera = new cv::VideoCapture(webcamName.toStdString());
+    camera->set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('U', 'Y', 'V', 'Y'));
+    camera->open(webcamName.toStdString());
+
+    if (!camera->isOpened())
+        qWarning("Cannot open the camera");
+
+    camera->set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+    camera->set(cv::CAP_PROP_FRAME_HEIGHT, 960);
+
+    picture = cv::Mat();
+}
+
+int opencvWorker::runCommand(std::string command, std::string &stdoutput)
+{
+    size_t charsRead;
+    int status;
+    char buffer[512];
+
+    FILE *output = popen(command.c_str(), "r");
+
+    if (output == NULL)
+        qWarning("cannot execute command");
+
+    stdoutput = "";
+    while (true) {
+        charsRead = fread(buffer, sizeof(char), sizeof(buffer), output);
+
+        if (charsRead > 0)
+            stdoutput += std::string(buffer, charsRead);
+
+        if (ferror(output)) {
+            pclose(output);
+            qWarning("Could not retreive output from command");
+        }
+
+        if (feof(output))
+            break;
+    }
+
+    status = pclose(output);
+    if (status == -1)
+        qWarning("Could not terminate from command");
+
+    return WEXITSTATUS(status);
+}
+
+
+opencvWorker::~opencvWorker() {
+    camera->release();
+}
+
+cv::Mat* opencvWorker::getImage()
+{
+    int iterations = 6;
+    do {
+        *camera >> picture;
+
+        if (picture.empty())
+            qWarning("Image retrieval error");
+
+    } while (--iterations);
+
+    return &picture;
+}
+
 void opencvWorker::initialiseWebcam(QString cameraLocation)
 {
     QString gstreamerPipeline;

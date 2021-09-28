@@ -35,6 +35,7 @@ class tfliteWorker : public QObject
 
 public:
     tfliteWorker(QString modelLocation, bool armnnDelegate, int defaultThreads);
+    void receiveImage(const cv::Mat&);
 
 signals:
     void sendOutputTensor(const QVector<float>&, int, const cv::Mat&);
@@ -50,7 +51,6 @@ private:
 
 private slots:
     void process();
-    void receiveImage(const cv::Mat&);
     void receiveNumOfInferenceThreads(int threads);
 };
 

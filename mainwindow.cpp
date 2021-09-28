@@ -80,13 +80,10 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     opencvThread = new QThread();
     opencvThread->setObjectName("opencvThread");
     opencvThread->start();
-    cvWorker = new opencvWorker();
+    cvWorker = new opencvWorker(cameraLocation);
     cvWorker->moveToThread(opencvThread);
 
     connect(cvWorker, SIGNAL(sendImage(const cv::Mat&)), this, SLOT(showImage(const cv::Mat&)));
-    connect(cvWorker, SIGNAL(webcamInit(bool)), this, SLOT(webcamInitStatus(bool)));
-
-    QMetaObject::invokeMethod(cvWorker, "initialiseWebcam", Qt::AutoConnection, Q_ARG(QString, webcamName));
 
     qRegisterMetaType<QVector<float> >("QVector<float>");
 
@@ -108,8 +105,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     tfliteThread = new QThread();
     tfliteThread->setObjectName("tfliteThread");
     createTfThread();
-
-    QMetaObject::invokeMethod(cvWorker, "readFrame");
 }
 
 void MainWindow::createTfThread()
@@ -124,7 +119,6 @@ void MainWindow::createTfThread()
      * RZ/G2M is 2 */
 
     connect(tfWorker, SIGNAL(requestImage()), this, SLOT(receiveRequest()));
-    connect(this, SIGNAL(sendImage(const cv::Mat&)), tfWorker, SLOT(receiveImage(const cv::Mat&)));
     connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const cv::Mat&)),
             this, SLOT(receiveOutputTensor(const QVector<float>&, int, const cv::Mat&)));
     connect(this, SIGNAL(sendNumOfInferenceThreads(int)), tfWorker, SLOT(receiveNumOfInferenceThreads(int)));
@@ -173,53 +167,47 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
     ui->tableWidget->setRowCount(0);
     labelListSorted.clear();
 
-    if (webcamDisconnect == true) {
-        webcamNotConnected();
-    } else {
-        for (int i = 0; (i + 5) < receivedTensor.size(); i += 6) {
-            totalCost += costs[int(outputTensor[i])];
-            labelListSorted.push_back(labelList[int(outputTensor[i])]);
-        }
-
-        labelListSorted.sort();
-
-        for (int i = 0; i < labelListSorted.size(); i++) {
-            QTableWidgetItem* item = new QTableWidgetItem(labelListSorted.at(i));
-            item->setTextAlignment(Qt::AlignCenter);
-
-            ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-            ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
-            ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1,
-            price = new QTableWidgetItem("£" + QString::number(
-            double(costs[labelList.indexOf(labelListSorted.at(i))]), 'f', 2)));
-            price->setTextAlignment(Qt::AlignRight);
-        }
-
-        ui->labelInference->setText(TEXT_INFERENCE + QString("%1 ms").arg(receivedTimeElapsed));
-        ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-
-        item = new QTableWidgetItem("Total Cost:");
-        item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
-        ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
-
-        item = new QTableWidgetItem("£" + QString::number(double(totalCost), 'f', 2));
-        item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
-        ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1, item);
-
-        if (!ui->pushButtonProcessBasket->isEnabled()) {
-            drawMatToView(receivedMat);
-
-            QMetaObject::invokeMethod(tfWorker, "process");
-        }
-
-        drawBoxes();
+    for (int i = 0; (i + 5) < receivedTensor.size(); i += 6) {
+        totalCost += costs[int(outputTensor[i])];
+        labelListSorted.push_back(labelList[int(outputTensor[i])]);
     }
+
+    labelListSorted.sort();
+
+    for (int i = 0; i < labelListSorted.size(); i++) {
+        QTableWidgetItem* item = new QTableWidgetItem(labelListSorted.at(i));
+        item->setTextAlignment(Qt::AlignCenter);
+
+        ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+        ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
+        ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1,
+        price = new QTableWidgetItem("£" + QString::number(
+        double(costs[labelList.indexOf(labelListSorted.at(i))]), 'f', 2)));
+        price->setTextAlignment(Qt::AlignRight);
+    }
+
+    ui->labelInference->setText(TEXT_INFERENCE + QString("%1 ms").arg(receivedTimeElapsed));
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+
+    item = new QTableWidgetItem("Total Cost:");
+    item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
+    ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
+
+    item = new QTableWidgetItem("£" + QString::number(double(totalCost), 'f', 2));
+    item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
+    ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1, item);
+
+    if (!ui->pushButtonProcessBasket->isEnabled()) {
+        drawMatToView(receivedMat);
+
+        QMetaObject::invokeMethod(tfWorker, "process");
+    }
+
+    drawBoxes();
 }
 
 void MainWindow::showImage(const cv::Mat& matToShow)
 {
-    QMetaObject::invokeMethod(cvWorker, "readFrame");
-
     matNew = matToShow;
     setImageSize();
 
@@ -264,17 +252,13 @@ void MainWindow::drawBoxes()
 
 void MainWindow::on_pushButtonProcessBasket_clicked()
 {
+    const cv::Mat* image = cvWorker->getImage();
+
     outputTensor.clear();
     ui->tableWidget->setRowCount(0);
     ui->labelInference->setText(TEXT_INFERENCE);
 
-    imageToSend = imageNew;
-    image = QPixmap::fromImage(imageToSend);
-    scene->clear();
-    scene->addPixmap(image);
-    scene->setSceneRect(image.rect());
-
-    QMetaObject::invokeMethod(tfWorker, "process");
+    tfWorker->receiveImage(*image);
 }
 
 void MainWindow::webcamInitStatus(bool webcamStatus)
@@ -326,7 +310,6 @@ void MainWindow::on_actionReset_triggered()
     if (webcamName.isEmpty() && QDir("/dev/v4l/by-id").exists()) {
         webcamName = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
     }
-    QMetaObject::invokeMethod(cvWorker, "initialiseWebcam", Qt::DirectConnection, Q_ARG(QString,webcamName));
 }
 
 void MainWindow::webcamNotConnected()
@@ -373,8 +356,6 @@ void MainWindow::on_actionDisconnect_triggered()
 {
     webcamDisconnect = true;
     QMetaObject::invokeMethod(cvWorker, "disconnectWebcam");
-
-    webcamNotConnected();
 }
 
 void MainWindow::on_actionEnable_ArmNN_Delegate_triggered()
