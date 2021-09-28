@@ -31,6 +31,8 @@
 #define TEXT_FPS "Total FPS: "
 #define TEXT_TOTAL_ITEMS "Total Items: "
 
+#define APP_WIDTH 1275
+#define APP_HEIGHT 635
 #define TABLE_COLUMN_WIDTH 180
 #define GRAPHICS_VIEW_WIDTH_4K 700 //This is for the 4k resolution
 #define GRAPHICS_VIEW_EXCESS_SPACE 2 //Prevents the image from scaling outside the graphics view
@@ -83,7 +85,6 @@ private:
     void drawBoxes();
     void drawFPS(qint64 timeElapsed);
     void createTfWorker();
-    void setApplicationSize();
     QImage matToQImage(const cv::Mat& matToConvert);
 
     Ui::MainWindow *ui;

@@ -22,7 +22,6 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QElapsedTimer>
-#include <QScreen>
 #include <QSysInfo>
 
 #include <opencv2/imgproc/imgproc.hpp>
@@ -52,7 +51,8 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     useArmNNDelegate = true;
 
     ui->setupUi(this);
-    setApplicationSize();
+    this->resize(APP_WIDTH, APP_HEIGHT);
+    ui->tableWidget->verticalHeader()->setDefaultSectionSize(25);
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
 
@@ -117,34 +117,6 @@ void MainWindow::createTfWorker()
     connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const cv::Mat&)),
             this, SLOT(receiveOutputTensor(const QVector<float>&, int, const cv::Mat&)));
     connect(this, SIGNAL(sendNumOfInferenceThreads(int)), tfWorker, SLOT(receiveNumOfInferenceThreads(int)));
-}
-
-void MainWindow::setApplicationSize()
-{
-    QScreen *screen = QGuiApplication::primaryScreen();
-    QRect screenGeometry = screen->geometry();
-    int height = screenGeometry.height();
-    int width = screenGeometry.width();
-
-    if (width == 3840 && height == 2160) { // resolution - 3840x2160
-        this->resize(2700, 1350);
-        ui->tableWidget->verticalHeader()->setDefaultSectionSize(60);
-    } else if (width == 1920 && height == 1080) { // resolution - 1920x1080
-        this->resize(1400, 700);
-    } else if (width == 1280 && height == 720) { // resolution - 1280x720
-        QMainWindow::showMaximized();
-        ui->tableWidget->verticalHeader()->setDefaultSectionSize(25);
-    } else if (width == 1152 && height == 864) { // resolution - 1152x864
-        this->resize(700, 525);
-        ui->tableWidget->setFixedWidth(350);
-        ui->tableWidget->verticalHeader()->setDefaultSectionSize(25);
-    } else if (width == 1024 && height == 768) { // resolution - 1024x768
-        this->resize(900, 450);
-        ui->tableWidget->setFixedWidth(300);
-        ui->tableWidget->verticalHeader()->setDefaultSectionSize(25);
-    } else {
-        QMainWindow::showMaximized();
-    }
 }
 
 void MainWindow::receiveRequest()
