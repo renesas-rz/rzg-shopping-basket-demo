@@ -101,29 +101,20 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     }
 
     qRegisterMetaType<cv::Mat>();
-    opencvThread = new QThread();
-    opencvThread->setObjectName("opencvThread");
-    opencvThread->start();
     cvWorker = new opencvWorker(cameraLocation);
-    cvWorker->moveToThread(opencvThread);
 
     connect(cvWorker, SIGNAL(sendImage(const cv::Mat&)), this, SLOT(showImage(const cv::Mat&)));
 
-    tfliteThread = new QThread();
-    tfliteThread->setObjectName("tfliteThread");
-    createTfThread();
+    createTfWorker();
 }
 
-void MainWindow::createTfThread()
+void MainWindow::createTfWorker()
 {
-    int inferenceThreads = 2;
-    tfWorker = new tfliteWorker(modelPath, useArmNNDelegate, inferenceThreads);
-    tfliteThread->start();
-    tfWorker->moveToThread(tfliteThread);
-
     /* ArmNN Delegate sets the inference threads to amount of CPU cores
      * of the same type logically group first, which for the RZ/G2L and
      * RZ/G2M is 2 */
+    int inferenceThreads = 2;
+    tfWorker = new tfliteWorker(modelPath, useArmNNDelegate, inferenceThreads);
 
     connect(tfWorker, SIGNAL(requestImage()), this, SLOT(receiveRequest()));
     connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const cv::Mat&)),
@@ -379,14 +370,8 @@ void MainWindow::on_actionEnable_ArmNN_Delegate_triggered()
     /* Toggle delegate state */
     useArmNNDelegate = !useArmNNDelegate;
 
-    /* Remake TfLite data structures with the new ArmNNDelegate settings */
-    tfliteThread->quit();
-
-    if(!tfliteThread->wait(800)) // Allow time for the TfLite thread to finish
-        qWarning("warning: could not recreate TfLite Thread");
-
     delete tfWorker;
-    createTfThread();
+    createTfWorker();
 }
 
 void MainWindow::on_actionExit_triggered()

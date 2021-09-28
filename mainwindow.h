@@ -82,7 +82,7 @@ private slots:
 private:
     void drawBoxes();
     void drawFPS(qint64 timeElapsed);
-    void createTfThread();
+    void createTfWorker();
     void setApplicationSize();
     QImage matToQImage(const cv::Mat& matToConvert);
 
@@ -96,7 +96,6 @@ private:
     QGraphicsView *graphicsView;
     opencvWorker *cvWorker;
     tfliteWorker *tfWorker;
-    QThread *opencvThread, *tfliteThread;
     QEventLoop *qeventLoop;
     QStringList labelListSorted;
     QString boardInfo;
