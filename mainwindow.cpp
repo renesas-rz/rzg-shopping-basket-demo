@@ -51,7 +51,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    webcamName = cameraLocation;
     modelPath = modelLocation;
     useArmNNDelegate = true;
 
@@ -76,15 +75,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     ui->labelInference->setText(TEXT_INFERENCE);
     ui->labelTotalItems->setText(TEXT_TOTAL_ITEMS);
 
-    qRegisterMetaType<cv::Mat>();
-    opencvThread = new QThread();
-    opencvThread->setObjectName("opencvThread");
-    opencvThread->start();
-    cvWorker = new opencvWorker(cameraLocation);
-    cvWorker->moveToThread(opencvThread);
-
-    connect(cvWorker, SIGNAL(sendImage(const cv::Mat&)), this, SLOT(showImage(const cv::Mat&)));
-
     qRegisterMetaType<QVector<float> >("QVector<float>");
 
     fpsTimer = new QElapsedTimer();
@@ -94,13 +84,30 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     if (systemInfo.machineHostName() == "hihope-rzg2m") {
         setWindowTitle("Shopping Basket Demo - RZ/G2M");
         boardInfo = G2M_HW_INFO;
+
+        if (cameraLocation.isEmpty() && QDir("/dev/v4l/by-id").exists())
+            webcamName = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
+
     } else if (systemInfo.machineHostName() == "smarc-rzg2l") {
         setWindowTitle("Shopping Basket Demo - RZ/G2L");
         boardInfo = G2L_HW_INFO;
+
+        if (cameraLocation.isEmpty())
+            cameraLocation = QString("/dev/video0");
+
     } else {
         setWindowTitle("Shopping Basket Demo");
         boardInfo = HW_INFO_WARNING;;
     }
+
+    qRegisterMetaType<cv::Mat>();
+    opencvThread = new QThread();
+    opencvThread->setObjectName("opencvThread");
+    opencvThread->start();
+    cvWorker = new opencvWorker(cameraLocation);
+    cvWorker->moveToThread(opencvThread);
+
+    connect(cvWorker, SIGNAL(sendImage(const cv::Mat&)), this, SLOT(showImage(const cv::Mat&)));
 
     tfliteThread = new QThread();
     tfliteThread->setObjectName("tfliteThread");

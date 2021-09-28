@@ -54,9 +54,6 @@ int main(int argc, char *argv[])
     parser.process(a);
     cameraLocation = parser.value(cameraOption);
 
-    if (cameraLocation.isEmpty() && QDir("/dev/v4l/by-id").exists())
-        cameraLocation = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
-
     modelLocation = CPU_MODEL_NAME;
 
     if (!QFile::exists(modelLocation))
