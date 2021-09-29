@@ -35,9 +35,8 @@ int main(int argc, char *argv[])
     "  and confidence of the object, populates a checkout list, and\n"
     "  also displays inference time.\n\n"
     "Required Hardware:\n"
-    "  Camera: Currently supports ELP 2.0 MP Camera Module, should\n"
-    "          work with any UVC compatible USB camera that has a\n"
-    "          supported resolution of 1280x1024.\n\n"
+    "  Camera: Currently Google Coral Mipi Camera is supported,"
+    "          but should work with any UVC compatible USB camera.\n\n"
     "Buttons:\n"
     "  Process Basket: Grabs the frame and runs inference.\n"
     "  About->Hardware: Display the board information.\n"
@@ -46,7 +45,7 @@ int main(int argc, char *argv[])
     "  Camera->Reset: Reset the connection to the webcam.\n"
     "  Camera->Disconnect: Disconnect the currently connected webcam.\n\n"
     "Default options:\n"
-    "  Camera: /dev/v4l/by-id/<first file>\n";
+    "  Camera: /dev/video0\n";
 
     parser.addOption(cameraOption);
     parser.addHelpOption();
