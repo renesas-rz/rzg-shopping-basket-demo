@@ -42,8 +42,6 @@ int main(int argc, char *argv[])
     "  About->Hardware: Display the board information.\n"
     "  About->License: Read the license that this app is licensed under.\n"
     "  About->Exit: Close the application.\n"
-    "  Camera->Reset: Reset the connection to the webcam.\n"
-    "  Camera->Disconnect: Disconnect the currently connected webcam.\n\n"
     "Default options:\n"
     "  Camera: /dev/video0\n";
 

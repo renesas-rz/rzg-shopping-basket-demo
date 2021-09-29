@@ -282,21 +282,7 @@ Basket</string>
     </property>
     <addaction name="actionEnable_ArmNN_Delegate"/>
    </widget>
-   <widget class="QMenu" name="menuCamera">
-    <property name="font">
-     <font>
-      <pointsize>13</pointsize>
-     </font>
-    </property>
-    <property name="title">
-     <string>Camera</string>
-    </property>
-    <addaction name="separator"/>
-    <addaction name="actionReset"/>
-    <addaction name="actionDisconnect"/>
-   </widget>
    <addaction name="menuAbout"/>
-   <addaction name="menuCamera"/>
    <addaction name="menuInference"/>
   </widget>
   <action name="actionLicense">
