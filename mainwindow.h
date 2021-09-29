@@ -40,7 +40,6 @@
 
 class QGraphicsScene;
 class QGraphicsView;
-class QEventLoop;
 class opencvWorker;
 class tfliteWorker;
 class QElapsedTimer;
@@ -97,7 +96,6 @@ private:
     QGraphicsView *graphicsView;
     opencvWorker *cvWorker;
     tfliteWorker *tfWorker;
-    QEventLoop *qeventLoop;
     QStringList labelListSorted;
     QString boardInfo;
     QString webcamName;

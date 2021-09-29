@@ -20,10 +20,7 @@
 #include <QGraphicsTextItem>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QThread>
-#include <QEventLoop>
 #include <QTimer>
-#include <QImageReader>
 #include <QElapsedTimer>
 #include <QScreen>
 #include <QSysInfo>
