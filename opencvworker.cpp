@@ -102,6 +102,8 @@ cv::Mat* opencvWorker::getImage()
 
     } while (--iterations);
 
+    cv::cvtColor(picture, picture, cv::COLOR_BGR2RGB);
+
     return &picture;
 }
 

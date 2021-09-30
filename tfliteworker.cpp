@@ -92,7 +92,6 @@ void tfliteWorker::receiveImage(const cv::Mat& sentMat)
     input = tfliteInterpreter->inputs()[0];
 
     cv::resize(sentMat, sentImageMat, cv::Size(wantedHeight, wantedWidth));
-    cv::cvtColor(sentImageMat, sentImageMat, cv::COLOR_BGR2RGB);
 
     memcpy(tfliteInterpreter->typed_tensor<uint8_t>(input), sentImageMat.data, sentImageMat.total() * sentImageMat.elemSize());
 

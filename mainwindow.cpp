@@ -305,16 +305,13 @@ void MainWindow::drawMatToView(const cv::Mat& matInput)
 
 QImage MainWindow::matToQImage(const cv::Mat& matToConvert)
 {
-    cv::Mat matToConvertRGB;
     QImage convertedImage;
 
     if (matToConvert.empty())
         return QImage(nullptr);
 
-    cv::cvtColor(matToConvert, matToConvertRGB, cv::COLOR_BGR2RGB);
-
-    convertedImage = QImage(matToConvertRGB.data, matToConvertRGB.cols,
-                     matToConvertRGB.rows, int(matToConvertRGB.step),
+    convertedImage = QImage(matToConvert.data, matToConvert.cols,
+                     matToConvert.rows, int(matToConvert.step),
                         QImage::Format_RGB888).copy();
 
     return convertedImage;
