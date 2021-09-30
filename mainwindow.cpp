@@ -171,6 +171,8 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
     }
 
     drawBoxes();
+
+    ui->pushButtonProcessBasket->setEnabled(true);
 }
 
 void MainWindow::showImage(const cv::Mat& matToShow)
@@ -219,7 +221,11 @@ void MainWindow::drawBoxes()
 
 void MainWindow::on_pushButtonProcessBasket_clicked()
 {
-    const cv::Mat* image = cvWorker->getImage();
+    const cv::Mat* image;
+
+    ui->pushButtonProcessBasket->setEnabled(false);
+
+    image = cvWorker->getImage();
 
     outputTensor.clear();
     ui->tableWidget->setRowCount(0);
