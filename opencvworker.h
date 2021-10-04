@@ -23,6 +23,7 @@
 #include <opencv2/videoio.hpp>
 
 #include <memory>
+#include <string.h>
 
 #include <QObject>
 
@@ -44,6 +45,7 @@ signals:
 
 private:
     int runCommand(std::string command, std::string &stdoutput);
+    void setupCamera();
 
     cv::Mat videoFrame;
     std::unique_ptr<cv::VideoCapture> videoCapture;
@@ -51,7 +53,7 @@ private:
     int cameraHeight;
     int cameraWidth;
     bool usingMipi;
-    QString webcamName;
+    std::string webcamName;
     cv::Mat picture;
     cv::VideoCapture *camera;
     std::string cameraInitialization = "media-ctl -d /dev/media0 --reset && media-ctl -d /dev/media0 -l \"'rzg2l_csi2 10830400.csi2':1->'CRU output':0 [1]\" && media-ctl -d /dev/media0 -V \"'rzg2l_csi2 10830400.csi2':1 [fmt:UYVY8_2X8/1280x960 field:none]\" && media-ctl -d /dev/media0 -V \"'ov5645 0-003c':0 [fmt:UYVY8_2X8/1280x960 field:none]\"";

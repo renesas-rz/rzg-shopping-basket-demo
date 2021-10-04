@@ -19,6 +19,11 @@
 #include <QCamera>
 #include <QCameraImageCapture>
 
+#include <fcntl.h>
+#include <linux/videodev2.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+
 #include "opencvworker.h"
 
 #include <opencv2/imgproc/imgproc.hpp>
@@ -26,9 +31,9 @@
 
 opencvWorker::opencvWorker(QString cameraLocation)
 {
-    webcamName = cameraLocation;
+    webcamName = cameraLocation.toStdString();
 
-    usingMipi = true;
+    setupCamera();
 
     if (usingMipi) {
         std::string stdoutput;
@@ -39,15 +44,19 @@ opencvWorker::opencvWorker(QString cameraLocation)
     }
 
     /* Define the format for the camera to use */
-    camera = new cv::VideoCapture(webcamName.toStdString());
+    camera = new cv::VideoCapture(webcamName);
     camera->set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('U', 'Y', 'V', 'Y'));
-    camera->open(webcamName.toStdString());
+    camera->open(webcamName);
 
     if (!camera->isOpened())
         qWarning("Cannot open the camera");
 
     camera->set(cv::CAP_PROP_FRAME_WIDTH, 1280);
     camera->set(cv::CAP_PROP_FRAME_HEIGHT, 960);
+    if (!usingMipi) {
+        camera->set(cv::CAP_PROP_FPS, 1);
+        camera->set(cv::CAP_PROP_BUFFERSIZE, 1);
+    }
 
     picture = cv::Mat();
 }
@@ -86,6 +95,30 @@ int opencvWorker::runCommand(std::string command, std::string &stdoutput)
     return WEXITSTATUS(status);
 }
 
+void opencvWorker::setupCamera()
+{
+    struct v4l2_capability cap;
+    int fd = open(webcamName.c_str(), O_RDONLY);
+
+    if (fd == -1)
+        qWarning() << "Could not open file:" << webcamName.c_str();
+
+    if (ioctl(fd, VIDIOC_QUERYCAP, &cap) == -1) {
+        qWarning("Could not retrieve v4l2 camera information");
+    }
+
+        std::string busInfo = std::string((char*)cap.bus_info);
+
+        if (busInfo.find("platform") != std::string::npos) {
+            usingMipi = true;
+        } else if (busInfo.find("usb") != std::string::npos) {
+            usingMipi = false;
+        } else {
+            qWarning("Camera format error, defaulting to MIPI");
+            usingMipi = true;
+        }
+    close(fd);
+}
 
 opencvWorker::~opencvWorker() {
     camera->release();
@@ -93,7 +126,13 @@ opencvWorker::~opencvWorker() {
 
 cv::Mat* opencvWorker::getImage()
 {
-    int iterations = 6;
+    int iterations;
+
+    if (usingMipi)
+        iterations = 6;
+    else
+        iterations = 2;
+
     do {
         *camera >> picture;
 
