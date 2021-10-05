@@ -19,15 +19,16 @@
 #include <QCamera>
 #include <QCameraImageCapture>
 
+#include <errno.h>
 #include <fcntl.h>
 #include <linux/videodev2.h>
+#include <linux/v4l2-controls.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
 #include "opencvworker.h"
 
 #include <opencv2/imgproc/imgproc.hpp>
-
 
 opencvWorker::opencvWorker(QString cameraLocation)
 {
@@ -121,6 +122,20 @@ void opencvWorker::setupCamera()
         }
     }
     close(fd);
+
+    if (usingMipi) {
+        struct v4l2_control control;
+        fd = open("/dev/v4l-subdev1", O_RDWR);
+
+        memset (&control, 0, sizeof(control));
+        control.id = V4L2_CID_AUTOGAIN;
+        control.value = true;
+
+        if (ioctl(fd, VIDIOC_S_CTRL, &control) == -1)
+            qWarning() << "VIDIOC_S_CTRL, errno:" << errno;
+
+        close(fd);
+    }
 }
 
 opencvWorker::~opencvWorker() {
