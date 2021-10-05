@@ -102,6 +102,14 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
 
     connect(cvWorker, SIGNAL(sendImage(const cv::Mat&)), this, SLOT(showImage(const cv::Mat&)));
 
+    if (cvWorker->cameraInit() == false) {
+        ui->pushButtonProcessBasket->setStyleSheet(BUTTON_GREYED_OUT);
+        ui->pushButtonProcessBasket->setEnabled(false);
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", CAMERA_INIT_STATUS_WARNING,
+                                     QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+        msgBox->show();
+    }
+
     createTfWorker();
 }
 
@@ -227,11 +235,18 @@ void MainWindow::on_pushButtonProcessBasket_clicked()
 
     image = cvWorker->getImage();
 
-    outputTensor.clear();
-    ui->tableWidget->setRowCount(0);
-    ui->labelInference->setText(TEXT_INFERENCE);
+    if (image == nullptr) {
+        ui->pushButtonProcessBasket->setStyleSheet(BUTTON_GREYED_OUT);
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", CAMERA_FAILURE_WARNING,
+                                     QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+        msgBox->show();
+    } else {
+        outputTensor.clear();
+        ui->tableWidget->setRowCount(0);
+        ui->labelInference->setText(TEXT_INFERENCE);
 
-    tfWorker->receiveImage(*image);
+        tfWorker->receiveImage(*image);
+    }
 }
 
 void MainWindow::webcamInitStatus(bool webcamStatus)

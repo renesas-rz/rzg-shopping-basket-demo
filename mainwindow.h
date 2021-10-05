@@ -21,6 +21,11 @@
 #include <QMainWindow>
 #include <opencv2/videoio.hpp>
 
+#define BUTTON_GREYED_OUT "background-color: rgba(42, 40, 157, 90);color: rgb(255, 255, 255);border: 2px;border-radius: 55px;border-style: outset;"
+
+#define CAMERA_INIT_STATUS_WARNING "Camera Warning!\n\n No camera detected, please check connection and relaunch application"
+#define CAMERA_FAILURE_WARNING "Camera Warning!\n\n Camera has stopped working, please check the connection and relaunch application"
+
 #define CPU_MODEL_NAME "shoppingBasketDemo.tflite"
 
 #define G2L_HW_INFO "Hardware Information\n\nBoard: RZ/G2L smarc-rzg2l-evk\nCPUs: 2x Arm Cortex-A55\nDDR: 2GB"

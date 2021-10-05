@@ -38,6 +38,7 @@ public:
     ~opencvWorker();
     void checkWebcam();
     cv::Mat* getImage();
+    bool cameraInit();
 
 signals:
     void sendImage(const cv::Mat&);

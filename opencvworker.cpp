@@ -105,7 +105,9 @@ void opencvWorker::setupCamera()
 
     if (ioctl(fd, VIDIOC_QUERYCAP, &cap) == -1) {
         qWarning("Could not retrieve v4l2 camera information");
-    }
+        webcamInitialised = false;
+    } else {
+        webcamInitialised = true;
 
         std::string busInfo = std::string((char*)cap.bus_info);
 
@@ -117,6 +119,7 @@ void opencvWorker::setupCamera()
             qWarning("Camera format error, defaulting to MIPI");
             usingMipi = true;
         }
+    }
     close(fd);
 }
 
@@ -136,14 +139,21 @@ cv::Mat* opencvWorker::getImage()
     do {
         *camera >> picture;
 
-        if (picture.empty())
+        if (picture.empty()) {
             qWarning("Image retrieval error");
+            return nullptr;
+        }
 
     } while (--iterations);
 
     cv::cvtColor(picture, picture, cv::COLOR_BGR2RGB);
 
     return &picture;
+}
+
+bool opencvWorker::cameraInit()
+{
+    return webcamInitialised;
 }
 
 void opencvWorker::initialiseWebcam(QString cameraLocation)
