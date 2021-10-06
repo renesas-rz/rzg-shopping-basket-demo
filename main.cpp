@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     "  and confidence of the object, populates a checkout list, and\n"
     "  also displays inference time.\n\n"
     "Required Hardware:\n"
-    "  Camera: Currently Google Coral Mipi Camera is supported,"
+    "  Camera: Currently the Google Coral Mipi camera is supported,\n"
     "          but should work with any UVC compatible USB camera.\n\n"
     "Buttons:\n"
     "  Process Basket: Grabs the frame and runs inference.\n"
