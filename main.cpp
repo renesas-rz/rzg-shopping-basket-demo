@@ -42,6 +42,8 @@ int main(int argc, char *argv[])
     "  About->Hardware: Display the board information.\n"
     "  About->License: Read the license that this app is licensed under.\n"
     "  About->Exit: Close the application.\n"
+    "  Inference->Enable/Disable: Enable or disable the ArmNN Delegate\n"
+    "                             during inference.\n\n"
     "Default options:\n"
     "  Camera: /dev/video0\n";
 
