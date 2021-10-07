@@ -60,6 +60,7 @@ public:
 private slots:
     void receiveOutputTensor (const QVector<float>& receivedTensor, int recievedTimeElapsed, const cv::Mat&);
     void on_pushButtonProcessBasket_clicked();
+    void on_pushButtonNextBasket_clicked();
     void on_actionLicense_triggered();
     void on_actionEnable_ArmNN_Delegate_triggered();
     void on_actionHardware_triggered();

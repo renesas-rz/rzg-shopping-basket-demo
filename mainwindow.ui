@@ -59,7 +59,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>250</y>
+      <y>320</y>
       <width>111</width>
       <height>111</height>
      </rect>
@@ -251,6 +251,54 @@ Basket</string>
     </property>
     <property name="text">
      <string>Total Items:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonNextBasket">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>190</y>
+      <width>111</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>1</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>23</pointsize>
+      <weight>75</weight>
+      <italic>false</italic>
+      <bold>true</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(42, 40, 157,90);
+color: rgb(255, 255, 255);
+border: 2px;
+border-radius: 55px;
+border-style: outset;
+</string>
+    </property>
+    <property name="text">
+     <string>Next
+Basket</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
     </property>
    </widget>
   </widget>

@@ -196,6 +196,11 @@ void MainWindow::drawBoxes()
     ui->labelTotalItems->setText(TEXT_TOTAL_ITEMS + QString("%1").arg(outputTensor.size() / 6));
 }
 
+void MainWindow::on_pushButtonNextBasket_clicked()
+{
+
+}
+
 void MainWindow::on_pushButtonProcessBasket_clicked()
 {
     const cv::Mat* image;
