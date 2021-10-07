@@ -20,6 +20,9 @@ QT += core gui multimedia widgets
 
 CONFIG += c++14
 
+# Uncomment the line below to build for the X86 architecture
+#DEFINES += SBD_X86
+
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
@@ -49,8 +52,7 @@ LIBS += \
     -ldl \
     -lutil
 
-system("echo $ARCH | grep arm64"):{
-DEFINES += SBD_ARM64
+!contains(DEFINES, SBD_X86) {
 LIBS += \
     -larmnn \
     -larmnnDelegate \

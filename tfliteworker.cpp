@@ -22,7 +22,7 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 
-#ifdef SBD_ARM64
+#ifndef SBD_X86
 #include <armnn/ArmNN.hpp>
 #include <armnn/Utils.hpp>
 #include <delegate/armnn_delegate.hpp>
@@ -39,7 +39,7 @@ tfliteWorker::tfliteWorker(QString modelLocation, bool armnnDelegate, int defaul
     tfliteModel = tflite::FlatBufferModel::BuildFromFile(modelLocation.toStdString().c_str());
     tflite::InterpreterBuilder(*tfliteModel, tfliteResolver) (&tfliteInterpreter);
 
-#ifdef SBD_ARM64
+#ifndef SBD_X86
     /* Setup the delegate */
     if(armnnDelegate == true) {
         std::vector<armnn::BackendId> backends = {armnn::Compute::CpuAcc};
