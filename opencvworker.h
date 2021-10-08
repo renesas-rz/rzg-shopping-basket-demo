@@ -36,8 +36,9 @@ class opencvWorker : public QObject
 public:
     opencvWorker(QString cameraLocation);
     ~opencvWorker();
-    cv::Mat* getImage();
+    cv::Mat* getImage(unsigned int iterations);
     bool cameraInit();
+    bool getUsingMipi();
 
 private:
     int runCommand(std::string command, std::string &stdoutput);

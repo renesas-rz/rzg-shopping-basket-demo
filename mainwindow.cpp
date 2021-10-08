@@ -216,6 +216,7 @@ void MainWindow::on_pushButtonNextBasket_clicked()
 void MainWindow::on_pushButtonProcessBasket_clicked()
 {
     const cv::Mat* image;
+    unsigned int iterations;
 
     ui->pushButtonNextBasket->setEnabled(true);
     ui->pushButtonNextBasket->setStyleSheet(BUTTON_BLUE);
@@ -223,7 +224,12 @@ void MainWindow::on_pushButtonProcessBasket_clicked()
     ui->pushButtonProcessBasket->setEnabled(false);
     ui->pushButtonProcessBasket->setStyleSheet(BUTTON_GREYED_OUT);
 
-    image = cvWorker->getImage();
+    if (cvWorker->getUsingMipi())
+        iterations = 6;
+    else
+        iterations = 2;
+
+    image = cvWorker->getImage(iterations);
 
     if (image == nullptr) {
         ui->pushButtonProcessBasket->setStyleSheet(BUTTON_GREYED_OUT);

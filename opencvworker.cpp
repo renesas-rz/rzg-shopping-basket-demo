@@ -141,15 +141,8 @@ opencvWorker::~opencvWorker() {
     camera->release();
 }
 
-cv::Mat* opencvWorker::getImage()
+cv::Mat* opencvWorker::getImage(unsigned int iterations)
 {
-    int iterations;
-
-    if (usingMipi)
-        iterations = 6;
-    else
-        iterations = 2;
-
     do {
         *camera >> picture;
 
@@ -163,6 +156,11 @@ cv::Mat* opencvWorker::getImage()
     cv::cvtColor(picture, picture, cv::COLOR_BGR2RGB);
 
     return &picture;
+}
+
+bool opencvWorker::getUsingMipi()
+{
+    return usingMipi;
 }
 
 bool opencvWorker::cameraInit()
