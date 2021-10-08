@@ -55,7 +55,14 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     sudo wget https://github.com/renesas-rz/meta-renesas-ai-demos/raw/master/meta-shopping-basket-demo/recipes-ai/shopping-basket-demo/files/shoppingBasketDemo.tflite
     ```
 
-5. Build demo application
+5. Exclude ArmNN incompatible code
+   As ArmNN is not supported for X86 machines, remove the ArmNN code by uncommenting
+   the line below from shoppingbasket_demo_app.pro:
+   ```
+   #DEFINES += SBD_X86
+   ```
+
+6. Build demo application
     ```
     cd rzg-shopping-basket-demo
     qmake
@@ -63,4 +70,4 @@ and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.con
     sudo cp shoppingbasket_demo_app /opt/Shopping_Basket_Demo
     ```
 
-6. Run the demo with `/opt/Shopping_Basket_Demo/shoppingbasket_demo_app`
+7. Run the demo with `/opt/Shopping_Basket_Demo/shoppingbasket_demo_app`
