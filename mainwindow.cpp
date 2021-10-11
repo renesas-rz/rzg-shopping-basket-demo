@@ -29,6 +29,7 @@
 #include "ui_mainwindow.h"
 #include "tfliteworker.h"
 #include "opencvworker.h"
+#include "videoworker.h"
 
 const QStringList MainWindow::labelList = {"Baked Beans", "Coke", "Diet Coke",
                                "Fusilli Pasta", "Lindt Chocolate",
@@ -107,9 +108,31 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
         QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", CAMERA_INIT_STATUS_WARNING,
                                      QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
         msgBox->show();
-    }
+    } else {
+        createVideoWorker();
+        createTfWorker();
 
-    createTfWorker();
+        start_video();
+    }
+}
+
+void MainWindow::createVideoWorker()
+{
+    vidWorker = new videoWorker();
+
+    connect(vidWorker, SIGNAL(showVideo()), this, SLOT(ShowVideo()));
+    connect(this, SIGNAL(startVideo()), vidWorker, SLOT(StartVideo()));
+    connect(this, SIGNAL(stopVideo()), vidWorker, SLOT(StopVideo()));
+}
+
+void MainWindow::start_video()
+{
+    emit startVideo();
+}
+
+void MainWindow::stop_video()
+{
+    emit stopVideo();
 }
 
 void MainWindow::createTfWorker()
@@ -211,12 +234,32 @@ void MainWindow::on_pushButtonNextBasket_clicked()
     ui->tableWidget->setRowCount(0);
     ui->labelInference->setText(TEXT_INFERENCE);
     ui->labelTotalItems->setText(TEXT_TOTAL_ITEMS);
+
+    start_video();
+}
+
+void MainWindow::ShowVideo()
+{
+    const cv::Mat* image;
+
+    image = cvWorker->getImage(1);
+
+    if (image == nullptr) {
+        stop_video();
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", CAMERA_FAILURE_WARNING,
+                                     QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+        msgBox->show();
+    } else {
+        drawMatToView(*image);
+    }
 }
 
 void MainWindow::on_pushButtonProcessBasket_clicked()
 {
     const cv::Mat* image;
     unsigned int iterations;
+
+    stop_video();
 
     ui->pushButtonNextBasket->setEnabled(true);
     ui->pushButtonNextBasket->setStyleSheet(BUTTON_BLUE);

@@ -48,6 +48,7 @@ class QGraphicsView;
 class opencvWorker;
 class tfliteWorker;
 class QElapsedTimer;
+class videoWorker;
 
 namespace Ui { class MainWindow; } //Needed for mainwindow.ui
 
@@ -58,6 +59,13 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent, QString cameraLocation, QString modelLocation);
 
+signals:
+    void startVideo();
+    void stopVideo();
+
+public slots:
+    void ShowVideo();
+
 private slots:
     void receiveOutputTensor (const QVector<float>& receivedTensor, int recievedTimeElapsed, const cv::Mat&);
     void on_pushButtonProcessBasket_clicked();
@@ -66,6 +74,8 @@ private slots:
     void on_actionEnable_ArmNN_Delegate_triggered();
     void on_actionHardware_triggered();
     void on_actionExit_triggered();
+    void start_video();
+    void stop_video();
 
 private:
     void drawBoxes();
@@ -73,6 +83,7 @@ private:
     void drawMatToView(const cv::Mat& matInput);
     void createTfWorker();
     QImage matToQImage(const cv::Mat& matToConvert);
+    void createVideoWorker();
 
     Ui::MainWindow *ui;
     bool useArmNNDelegate;
@@ -87,6 +98,7 @@ private:
     QString modelPath;
     static const QStringList labelList;
     static const std::vector<float> costs;
+    videoWorker *vidWorker;
 };
 
 #endif // MAINWINDOW_H

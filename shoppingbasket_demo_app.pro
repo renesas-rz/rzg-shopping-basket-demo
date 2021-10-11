@@ -27,12 +27,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     opencvworker.cpp \
-    tfliteworker.cpp
+    tfliteworker.cpp \
+    videoworker.cpp
 
 HEADERS += \
     mainwindow.h \
     opencvworker.h \
-    tfliteworker.h
+    tfliteworker.h \
+    videoworker.h
 
 FORMS += \
     mainwindow.ui

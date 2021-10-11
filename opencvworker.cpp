@@ -54,7 +54,7 @@ opencvWorker::opencvWorker(QString cameraLocation)
     camera->set(cv::CAP_PROP_FRAME_WIDTH, 1280);
     camera->set(cv::CAP_PROP_FRAME_HEIGHT, 960);
     if (!usingMipi) {
-        camera->set(cv::CAP_PROP_FPS, 1);
+        camera->set(cv::CAP_PROP_FPS, 10);
         camera->set(cv::CAP_PROP_BUFFERSIZE, 1);
     }
 
