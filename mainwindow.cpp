@@ -70,6 +70,11 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     ui->labelInference->setText(TEXT_INFERENCE);
     ui->labelTotalItems->setText(TEXT_TOTAL_ITEMS);
 
+    ui->pushButtonProcessBasket->setEnabled(true);
+    ui->pushButtonProcessBasket->setStyleSheet(BUTTON_BLUE);
+    ui->pushButtonNextBasket->setEnabled(false);
+    ui->pushButtonNextBasket->setStyleSheet(BUTTON_GREYED_OUT);
+
     qRegisterMetaType<QVector<float> >("QVector<float>");
 
     QSysInfo systemInfo;
@@ -164,8 +169,6 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
     }
 
     drawBoxes();
-
-    ui->pushButtonProcessBasket->setEnabled(true);
 }
 
 void MainWindow::drawBoxes()
@@ -198,14 +201,27 @@ void MainWindow::drawBoxes()
 
 void MainWindow::on_pushButtonNextBasket_clicked()
 {
+    ui->pushButtonProcessBasket->setEnabled(true);
+    ui->pushButtonProcessBasket->setStyleSheet(BUTTON_BLUE);
 
+    ui->pushButtonNextBasket->setEnabled(false);
+    ui->pushButtonNextBasket->setStyleSheet(BUTTON_GREYED_OUT);
+
+    outputTensor.clear();
+    ui->tableWidget->setRowCount(0);
+    ui->labelInference->setText(TEXT_INFERENCE);
+    ui->labelTotalItems->setText(TEXT_TOTAL_ITEMS);
 }
 
 void MainWindow::on_pushButtonProcessBasket_clicked()
 {
     const cv::Mat* image;
 
+    ui->pushButtonNextBasket->setEnabled(true);
+    ui->pushButtonNextBasket->setStyleSheet(BUTTON_BLUE);
+
     ui->pushButtonProcessBasket->setEnabled(false);
+    ui->pushButtonProcessBasket->setStyleSheet(BUTTON_GREYED_OUT);
 
     image = cvWorker->getImage();
 

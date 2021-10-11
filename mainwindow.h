@@ -21,6 +21,7 @@
 #include <QMainWindow>
 #include <opencv2/videoio.hpp>
 
+#define BUTTON_BLUE "background-color: rgba(42, 40, 157);color: rgb(255, 255, 255);border: 2px;border-radius: 55px;border-style: outset;"
 #define BUTTON_GREYED_OUT "background-color: rgba(42, 40, 157, 90);color: rgb(255, 255, 255);border: 2px;border-radius: 55px;border-style: outset;"
 
 #define CAMERA_INIT_STATUS_WARNING "Camera Warning!\n\n No camera detected, please check connection and relaunch application"
