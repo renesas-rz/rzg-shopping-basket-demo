@@ -267,6 +267,8 @@ void MainWindow::on_pushButtonProcessBasket_clicked()
     ui->pushButtonProcessBasket->setEnabled(false);
     ui->pushButtonProcessBasket->setStyleSheet(BUTTON_GREYED_OUT);
 
+    qApp->processEvents(QEventLoop::WaitForMoreEvents);
+
     if (cvWorker->getUsingMipi())
         iterations = 6;
     else
