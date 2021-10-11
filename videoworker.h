@@ -27,6 +27,7 @@ class videoWorker : public QObject
 
 public:
     explicit videoWorker(QObject *parent = 0);
+    void setDelayMS(unsigned int delay);
 
 signals:
     void showVideo();
@@ -41,6 +42,7 @@ private slots:
 private:
     bool stopped;
     bool running;
+    unsigned int videoDelay;
 };
 
 #endif // VIDEOWORKER_H

@@ -112,6 +112,11 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
         createVideoWorker();
         createTfWorker();
 
+        /* Limit camera loop speed if using mipi camera to save on CPU
+         * USB camera is alreay limited to 10 FPS */
+        if (cvWorker->getUsingMipi())
+            vidWorker->setDelayMS(MIPI_VIDEO_DELAY);
+
         start_video();
     }
 }

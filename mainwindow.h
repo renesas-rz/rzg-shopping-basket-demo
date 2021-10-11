@@ -42,6 +42,7 @@
 #define BOX_WIDTH 2
 #define BOX_COLOUR Qt::green
 #define TEXT_COLOUR Qt::green
+#define MIPI_VIDEO_DELAY 50
 
 class QGraphicsScene;
 class QGraphicsView;

@@ -16,10 +16,13 @@
  * along with the RZG Shopping Basket Demo.  If not, see <https://www.gnu.org/licenses/>.
  *****************************************************************************************/
 
+#include <chrono>
+#include <thread>
+
 #include "videoworker.h"
 
 videoWorker::videoWorker(QObject *parent) :
-    QObject(parent), stopped(false), running(false)
+    QObject(parent), stopped(false), running(false), videoDelay(0)
 {}
 
 void videoWorker::play_video()
@@ -27,6 +30,10 @@ void videoWorker::play_video()
     if (!running || stopped) return;
 
     emit showVideo();
+
+    /* Limit play_video loop speed */
+    if (videoDelay != 0)
+        std::this_thread::sleep_for(std::chrono::milliseconds(videoDelay));
 
     /* Use QueuedConnection to give other threads a chance to be processed before next play_video */
     QMetaObject::invokeMethod(this, "play_video", Qt::QueuedConnection);
@@ -44,4 +51,9 @@ void videoWorker::StartVideo()
     running = true;
 
     play_video();
+}
+
+void videoWorker::setDelayMS(unsigned int delay)
+{
+    videoDelay = delay;
 }
