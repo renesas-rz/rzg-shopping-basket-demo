@@ -45,8 +45,12 @@ int main(int argc, char *argv[])
     "  About->Exit: Close the application.\n"
     "  Inference->Enable/Disable: Enable or disable the ArmNN Delegate\n"
     "                             during inference.\n\n"
-    "Default options:\n"
-    "  Camera: /dev/video0\n";
+    "Default Options:\n"
+    "  Camera: /dev/video0\n\n"
+    "Application Exit Codes:\n"
+    "  0: Successful exit\n"
+    "  1: Camera initialisation failed\n"
+    "  2: Camera stopped working";
 
     parser.addOption(cameraOption);
     parser.addHelpOption();

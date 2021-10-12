@@ -24,8 +24,8 @@
 #define BUTTON_BLUE "background-color: rgba(42, 40, 157);color: rgb(255, 255, 255);border: 2px;border-radius: 55px;border-style: outset;"
 #define BUTTON_GREYED_OUT "background-color: rgba(42, 40, 157, 90);color: rgb(255, 255, 255);border: 2px;border-radius: 55px;border-style: outset;"
 
-#define CAMERA_INIT_STATUS_WARNING "Camera Warning!\n\n No camera detected, please check connection and relaunch application"
-#define CAMERA_FAILURE_WARNING "Camera Warning!\n\n Camera has stopped working, please check the connection and relaunch application"
+#define TEXT_CAMERA_INIT_STATUS_ERROR "Camera Error!\n\n No camera detected, please check connection and relaunch application.\n\nApplication will now close."
+#define TEXT_CAMERA_FAILURE_ERROR "Camera Error!\n\n Camera has stopped working, please check the connection and relaunch application.\n\nApplication will now close."
 
 #define CPU_MODEL_NAME "shoppingBasketDemo.tflite"
 
@@ -43,6 +43,11 @@
 #define BOX_COLOUR Qt::green
 #define TEXT_COLOUR Qt::green
 #define MIPI_VIDEO_DELAY 50
+
+/* Application exit codes */
+#define EXIT_OKAY 0
+#define EXIT_CAMERA_INIT_ERROR 1
+#define EXIT_CAMERA_STOPPED_ERROR 2
 
 class QGraphicsScene;
 class QGraphicsView;
