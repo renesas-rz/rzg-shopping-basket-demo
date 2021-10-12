@@ -85,6 +85,8 @@ private:
     void createTfWorker();
     QImage matToQImage(const cv::Mat& matToConvert);
     void createVideoWorker();
+    void setProcessButton(bool enable);
+    void setNextButton(bool enable);
 
     Ui::MainWindow *ui;
     bool useArmNNDelegate;

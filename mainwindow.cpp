@@ -71,10 +71,8 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     ui->labelInference->setText(TEXT_INFERENCE);
     ui->labelTotalItems->setText(TEXT_TOTAL_ITEMS);
 
-    ui->pushButtonProcessBasket->setEnabled(true);
-    ui->pushButtonProcessBasket->setStyleSheet(BUTTON_BLUE);
-    ui->pushButtonNextBasket->setEnabled(false);
-    ui->pushButtonNextBasket->setStyleSheet(BUTTON_GREYED_OUT);
+    setProcessButton(true);
+    setNextButton(false);
 
     qRegisterMetaType<QVector<float> >("QVector<float>");
 
@@ -103,10 +101,8 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     cvWorker = new opencvWorker(cameraLocation);
 
     if (cvWorker->cameraInit() == false) {
-        ui->pushButtonProcessBasket->setStyleSheet(BUTTON_GREYED_OUT);
-        ui->pushButtonProcessBasket->setEnabled(false);
-        ui->pushButtonNextBasket->setStyleSheet(BUTTON_GREYED_OUT);
-        ui->pushButtonNextBasket->setEnabled(false);
+        setProcessButton(false);
+        setNextButton(false);
         QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", CAMERA_INIT_STATUS_WARNING,
                                      QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
         msgBox->show();
@@ -231,11 +227,8 @@ void MainWindow::drawBoxes()
 
 void MainWindow::on_pushButtonNextBasket_clicked()
 {
-    ui->pushButtonProcessBasket->setEnabled(true);
-    ui->pushButtonProcessBasket->setStyleSheet(BUTTON_BLUE);
-
-    ui->pushButtonNextBasket->setEnabled(false);
-    ui->pushButtonNextBasket->setStyleSheet(BUTTON_GREYED_OUT);
+    setProcessButton(true);
+    setNextButton(false);
 
     outputTensor.clear();
     ui->tableWidget->setRowCount(0);
@@ -253,8 +246,7 @@ void MainWindow::ShowVideo()
 
     if (image == nullptr) {
         stop_video();
-        ui->pushButtonNextBasket->setEnabled(false);
-        ui->pushButtonNextBasket->setStyleSheet(BUTTON_GREYED_OUT);
+        setProcessButton(false);
         QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", CAMERA_FAILURE_WARNING,
                                      QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
         msgBox->show();
@@ -270,13 +262,8 @@ void MainWindow::on_pushButtonProcessBasket_clicked()
 
     stop_video();
 
-    ui->pushButtonNextBasket->setEnabled(true);
-    ui->pushButtonNextBasket->setStyleSheet(BUTTON_BLUE);
-
-    ui->pushButtonProcessBasket->setEnabled(false);
-    ui->pushButtonProcessBasket->setStyleSheet(BUTTON_GREYED_OUT);
-
-    qApp->processEvents(QEventLoop::WaitForMoreEvents);
+    setProcessButton(false);
+    setNextButton(true);
 
     if (cvWorker->getUsingMipi())
         iterations = 6;
@@ -286,8 +273,7 @@ void MainWindow::on_pushButtonProcessBasket_clicked()
     image = cvWorker->getImage(iterations);
 
     if (image == nullptr) {
-        ui->pushButtonNextBasket->setEnabled(false);
-        ui->pushButtonNextBasket->setStyleSheet(BUTTON_GREYED_OUT);
+        setNextButton(false);
         QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", CAMERA_FAILURE_WARNING,
                                      QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
         msgBox->show();
@@ -324,6 +310,34 @@ void MainWindow::on_actionHardware_triggered()
     QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, "Information", boardInfo,
                                  QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
     msgBox->show();
+}
+
+void MainWindow::setProcessButton(bool enable)
+{
+    if (enable)
+    {
+        ui->pushButtonProcessBasket->setStyleSheet(BUTTON_BLUE);
+        ui->pushButtonProcessBasket->setEnabled(true);
+    } else {
+        ui->pushButtonProcessBasket->setStyleSheet(BUTTON_GREYED_OUT);
+        ui->pushButtonProcessBasket->setEnabled(false);
+    }
+
+    qApp->processEvents(QEventLoop::WaitForMoreEvents);
+}
+
+void MainWindow::setNextButton(bool enable)
+{
+    if (enable)
+    {
+        ui->pushButtonNextBasket->setStyleSheet(BUTTON_BLUE);
+        ui->pushButtonNextBasket->setEnabled(true);
+    } else {
+        ui->pushButtonNextBasket->setStyleSheet(BUTTON_GREYED_OUT);
+        ui->pushButtonNextBasket->setEnabled(false);
+    }
+
+    qApp->processEvents(QEventLoop::WaitForMoreEvents);
 }
 
 void MainWindow::drawMatToView(const cv::Mat& matInput)
