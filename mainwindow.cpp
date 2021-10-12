@@ -103,6 +103,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     if (cvWorker->cameraInit() == false) {
         setProcessButton(false);
         setNextButton(false);
+        ui->menuInference->setEnabled(false);
         QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", CAMERA_INIT_STATUS_WARNING,
                                      QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
         msgBox->show();
