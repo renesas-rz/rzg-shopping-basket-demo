@@ -18,7 +18,7 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
-#include <QDir>
+#include <QFile>
 
 #include "mainwindow.h"
 

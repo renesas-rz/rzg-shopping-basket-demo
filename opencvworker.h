@@ -36,34 +36,20 @@ class opencvWorker : public QObject
 public:
     opencvWorker(QString cameraLocation);
     ~opencvWorker();
-    void checkWebcam();
     cv::Mat* getImage();
     bool cameraInit();
-
-signals:
-    void sendImage(const cv::Mat&);
-    void webcamInit(bool webcamInitialised);
 
 private:
     int runCommand(std::string command, std::string &stdoutput);
     void setupCamera();
 
-    cv::Mat videoFrame;
     std::unique_ptr<cv::VideoCapture> videoCapture;
     bool webcamInitialised;
-    int cameraHeight;
-    int cameraWidth;
     bool usingMipi;
     std::string webcamName;
     cv::Mat picture;
     cv::VideoCapture *camera;
     std::string cameraInitialization = "media-ctl -d /dev/media0 --reset && media-ctl -d /dev/media0 -l \"'rzg2l_csi2 10830400.csi2':1->'CRU output':0 [1]\" && media-ctl -d /dev/media0 -V \"'rzg2l_csi2 10830400.csi2':1 [fmt:UYVY8_2X8/1280x960 field:none]\" && media-ctl -d /dev/media0 -V \"'ov5645 0-003c':0 [fmt:UYVY8_2X8/1280x960 field:none]\"";
-
-private slots:
-    void initialiseWebcam(QString cameraLocation);
-    void readFrame();
-    void disconnectWebcam();
-    void getResolution();
 };
 
 #endif // OPENCVCAPTUREWORKER_H

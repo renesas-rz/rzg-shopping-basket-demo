@@ -20,8 +20,6 @@
 #include <QGraphicsTextItem>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QTimer>
-#include <QElapsedTimer>
 #include <QSysInfo>
 
 #include <opencv2/imgproc/imgproc.hpp>
@@ -74,8 +72,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
 
     qRegisterMetaType<QVector<float> >("QVector<float>");
 
-    fpsTimer = new QElapsedTimer();
-
     QSysInfo systemInfo;
 
     if (systemInfo.machineHostName() == "hihope-rzg2m") {
@@ -83,7 +79,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
         boardInfo = G2M_HW_INFO;
 
         if (cameraLocation.isEmpty() && QDir("/dev/v4l/by-id").exists())
-            webcamName = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
+            cameraLocation = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
 
     } else if (systemInfo.machineHostName() == "smarc-rzg2l") {
         setWindowTitle("Shopping Basket Demo - RZ/G2L");
@@ -99,8 +95,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
 
     qRegisterMetaType<cv::Mat>();
     cvWorker = new opencvWorker(cameraLocation);
-
-    connect(cvWorker, SIGNAL(sendImage(const cv::Mat&)), this, SLOT(showImage(const cv::Mat&)));
 
     if (cvWorker->cameraInit() == false) {
         ui->pushButtonProcessBasket->setStyleSheet(BUTTON_GREYED_OUT);
@@ -121,15 +115,8 @@ void MainWindow::createTfWorker()
     int inferenceThreads = 2;
     tfWorker = new tfliteWorker(modelPath, useArmNNDelegate, inferenceThreads);
 
-    connect(tfWorker, SIGNAL(requestImage()), this, SLOT(receiveRequest()));
     connect(tfWorker, SIGNAL(sendOutputTensor(const QVector<float>&, int, const cv::Mat&)),
             this, SLOT(receiveOutputTensor(const QVector<float>&, int, const cv::Mat&)));
-    connect(this, SIGNAL(sendNumOfInferenceThreads(int)), tfWorker, SLOT(receiveNumOfInferenceThreads(int)));
-}
-
-void MainWindow::receiveRequest()
-{
-    sendImage(matToSend);
 }
 
 void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int receivedTimeElapsed, const cv::Mat& receivedMat)
@@ -174,29 +161,11 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
 
     if (!ui->pushButtonProcessBasket->isEnabled()) {
         drawMatToView(receivedMat);
-
-        QMetaObject::invokeMethod(tfWorker, "process");
     }
 
     drawBoxes();
 
     ui->pushButtonProcessBasket->setEnabled(true);
-}
-
-void MainWindow::showImage(const cv::Mat& matToShow)
-{
-    matNew = matToShow;
-    setImageSize();
-
-    imageNew = imageNew.scaled(imageWidth, imageHeight);
-
-    imageToSend = imageNew;
-
-    image = QPixmap::fromImage(imageToSend);
-    scene->clear();
-    scene->addPixmap(image);
-    scene->setSceneRect(image.rect());
-    drawBoxes();
 }
 
 void MainWindow::drawBoxes()
@@ -249,24 +218,6 @@ void MainWindow::on_pushButtonProcessBasket_clicked()
     }
 }
 
-void MainWindow::webcamInitStatus(bool webcamStatus)
-{
-    webcamDisconnect = false;
-
-    if (!webcamStatus) {
-        if (webcamName.isEmpty())
-            webcamNotConnected();
-    } else {
-        cvWorker->checkWebcam();
-    }
-}
-
-void MainWindow::setImageSize()
-{
-    imageHeight = ui->graphicsView->height();
-    imageWidth = ui->graphicsView->width();
-}
-
 void MainWindow::on_actionLicense_triggered()
 {
     QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, "License",
@@ -291,24 +242,6 @@ void MainWindow::on_actionHardware_triggered()
     QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, "Information", boardInfo,
                                  QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
     msgBox->show();
-}
-
-void MainWindow::on_actionReset_triggered()
-{
-    if (webcamName.isEmpty() && QDir("/dev/v4l/by-id").exists()) {
-        webcamName = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
-    }
-}
-
-void MainWindow::webcamNotConnected()
-{
-    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Warning", "Webcam not connected", QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
-    msgBox->show();
-    scene->clear();
-    ui->graphicsView->setScene(scene);
-    ui->tableWidget->clearContents();
-    ui->tableWidget->setRowCount(0);
-    ui->labelInference->setText(TEXT_INFERENCE);
 }
 
 void MainWindow::drawMatToView(const cv::Mat& matInput)
@@ -336,12 +269,6 @@ QImage MainWindow::matToQImage(const cv::Mat& matToConvert)
                         QImage::Format_RGB888).copy();
 
     return convertedImage;
-}
-
-void MainWindow::on_actionDisconnect_triggered()
-{
-    webcamDisconnect = true;
-    QMetaObject::invokeMethod(cvWorker, "disconnectWebcam");
 }
 
 void MainWindow::on_actionEnable_ArmNN_Delegate_triggered()

@@ -16,8 +16,7 @@
  * along with the RZG Shopping Basket Demo.  If not, see <https://www.gnu.org/licenses/>.
  *****************************************************************************************/
 
-#include <QCamera>
-#include <QCameraImageCapture>
+#include <QDebug>
 
 #include <errno.h>
 #include <fcntl.h>
@@ -169,79 +168,4 @@ cv::Mat* opencvWorker::getImage()
 bool opencvWorker::cameraInit()
 {
     return webcamInitialised;
-}
-
-void opencvWorker::initialiseWebcam(QString cameraLocation)
-{
-    QString gstreamerPipeline;
-
-    getResolution();
-    if (webcamInitialised == true)
-        videoCapture->release();
-
-    if (!cameraLocation.isEmpty()) {
-        gstreamerPipeline = "v4l2src device=" + QString(cameraLocation) +
-            " ! video/x-raw, width=" + QString::number(cameraWidth) + ", height=" + QString::number(cameraHeight) +
-            " ! videoconvert ! appsink";
-
-        videoCapture.reset(new cv::VideoCapture(gstreamerPipeline.toStdString(), cv::CAP_GSTREAMER));
-
-        if (videoCapture->isOpened())
-            webcamInitialised = true;
-        else
-            webcamInitialised = false;
-
-    } else {
-        webcamInitialised = false;
-    }
-
-    emit webcamInit(webcamInitialised);
-}
-
-void opencvWorker::getResolution()
-{
-    QList<QByteArray> cameraDevices = QCamera::availableDevices();
-    QList<QSize> resolutions;
-    QCamera *camera;
-    QCameraImageCapture *imageCapture;
-
-    if (cameraDevices.count() > 0) {
-        QByteArray cameraDevice = cameraDevices.first();
-        camera = new QCamera(cameraDevice);
-        camera->load();
-        imageCapture = new QCameraImageCapture(camera);
-        resolutions = imageCapture->supportedResolutions();
-
-        QSize resol = resolutions.takeLast();
-        cameraWidth = resol.width();
-        cameraHeight = resol.height();
-    }
-}
-
-void opencvWorker::readFrame()
-{
-    if(!videoCapture->read(videoFrame)) {
-        webcamInitialised = false;
-        videoCapture->release();
-        emit webcamInit(webcamInitialised);
-        return;
-    }
-
-    emit sendImage(videoFrame);
-}
-
-void opencvWorker::checkWebcam()
-{
-    if(!videoCapture->read(videoFrame)) {
-        webcamInitialised = false;
-        videoCapture->release();
-        return;
-    } else
-         webcamInitialised = true;
-}
-
-void opencvWorker::disconnectWebcam()
-{
-    if (webcamInitialised == true)
-        videoCapture->release();
 }

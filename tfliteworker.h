@@ -27,7 +27,6 @@
 #include <opencv2/videoio.hpp>
 
 #define DETECT_THRESHOLD 0.5
-#define BITS_TO_BYTE 8
 
 class tfliteWorker : public QObject
 {
@@ -39,19 +38,13 @@ public:
 
 signals:
     void sendOutputTensor(const QVector<float>&, int, const cv::Mat&);
-    void requestImage();
 
 private:
     std::unique_ptr<tflite::Interpreter> tfliteInterpreter;
     std::unique_ptr<tflite::FlatBufferModel> tfliteModel;
     std::string modelName;
-    int numberOfInferenceThreads;
     QVector<float> outputTensor;
     int wantedWidth, wantedHeight, wantedChannels;
-
-private slots:
-    void process();
-    void receiveNumOfInferenceThreads(int threads);
 };
 
 #endif // TFLITEWORKER_H

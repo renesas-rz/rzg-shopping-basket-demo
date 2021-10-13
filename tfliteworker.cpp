@@ -34,8 +34,6 @@ tfliteWorker::tfliteWorker(QString modelLocation, bool armnnDelegate, int defaul
     tflite::ops::builtin::BuiltinOpResolver tfliteResolver;
     TfLiteIntArray *wantedDimensions;
 
-    numberOfInferenceThreads = defaultThreads;
-
     tfliteModel = tflite::FlatBufferModel::BuildFromFile(modelLocation.toStdString().c_str());
     tflite::InterpreterBuilder(*tfliteModel, tfliteResolver) (&tfliteInterpreter);
 
@@ -58,18 +56,12 @@ tfliteWorker::tfliteWorker(QString modelLocation, bool armnnDelegate, int defaul
         qFatal("Failed to allocate tensors!");
 
     tfliteInterpreter->SetProfiler(nullptr);
-    tfliteInterpreter->SetNumThreads(numberOfInferenceThreads);
+    tfliteInterpreter->SetNumThreads(defaultThreads);
 
     wantedDimensions = tfliteInterpreter->tensor(tfliteInterpreter->inputs()[0])->dims;
     wantedHeight = wantedDimensions->data[1];
     wantedWidth = wantedDimensions->data[2];
     wantedChannels = wantedDimensions->data[3];
-}
-
-void tfliteWorker::process()
-{
-    tfliteInterpreter->SetNumThreads(numberOfInferenceThreads);
-    emit requestImage();
 }
 
 /*
@@ -112,9 +104,4 @@ void tfliteWorker::receiveImage(const cv::Mat& sentMat)
     timeElapsed = int(std::chrono::duration_cast<std::chrono::milliseconds>(stopTime - startTime).count());
     emit sendOutputTensor(outputTensor, timeElapsed, sentMat);
     outputTensor.clear();
-}
-
-void tfliteWorker::receiveNumOfInferenceThreads(int threads)
-{
-    numberOfInferenceThreads = threads;
 }
