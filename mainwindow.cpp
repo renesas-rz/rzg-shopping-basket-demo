@@ -92,9 +92,15 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
         if (cameraLocation.isEmpty())
             cameraLocation = QString("/dev/video0");
 
+    } else if (systemInfo.machineHostName() == "ek874") {
+        setWindowTitle("Shopping Basket Demo - RZ/G2E");
+        boardInfo = G2E_HW_INFO;
+
+        if (cameraLocation.isEmpty())
+            cameraLocation = QString("/dev/video0");
     } else {
         setWindowTitle("Shopping Basket Demo");
-        boardInfo = HW_INFO_WARNING;;
+        boardInfo = HW_INFO_WARNING;
     }
 
     qRegisterMetaType<cv::Mat>();
