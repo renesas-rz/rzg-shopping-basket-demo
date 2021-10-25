@@ -107,10 +107,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     cvWorker = new opencvWorker(cameraLocation);
 
     if (cvWorker->cameraInit() == false) {
-        setProcessButton(false);
-        setNextButton(false);
-        ui->menuInference->setEnabled(false);
-
         qWarning("Camera not initialising. Quitting.");
         QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, "Error", TEXT_CAMERA_INIT_STATUS_ERROR,
                                      QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
@@ -118,6 +114,14 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
 
         /* Force application quit as it can't be used without a camera */
         exit(EXIT_CAMERA_INIT_ERROR);
+    } else if (cvWorker->getCameraOpen() == false) {
+        qWarning("Camera not opening. Quitting.");
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, "Error", TEXT_CAMERA_OPENING_ERROR,
+                                     QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+        msgBox->exec();
+
+        /* Force application quit as it can't be used without a camera */
+        exit(EXIT_CAMERA_STOPPED_ERROR);
     } else {
         createVideoWorker();
         createTfWorker();

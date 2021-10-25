@@ -32,6 +32,7 @@
 opencvWorker::opencvWorker(QString cameraLocation)
 {
     webcamName = cameraLocation.toStdString();
+    connectionAttempts = 0;
 
     setupCamera();
 
@@ -43,22 +44,7 @@ opencvWorker::opencvWorker(QString cameraLocation)
             qWarning("Cannot initialize the camera");
     }
 
-    /* Define the format for the camera to use */
-    camera = new cv::VideoCapture(webcamName);
-    camera->set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('U', 'Y', 'V', 'Y'));
-    camera->open(webcamName);
-
-    if (!camera->isOpened())
-        qWarning("Cannot open the camera");
-
-    camera->set(cv::CAP_PROP_FRAME_WIDTH, 1280);
-    camera->set(cv::CAP_PROP_FRAME_HEIGHT, 960);
-    if (!usingMipi) {
-        camera->set(cv::CAP_PROP_FPS, 10);
-        camera->set(cv::CAP_PROP_BUFFERSIZE, 1);
-    }
-
-    picture = cv::Mat();
+    connectCamera();
 }
 
 int opencvWorker::runCommand(std::string command, std::string &stdoutput)
@@ -137,6 +123,51 @@ void opencvWorker::setupCamera()
     }
 }
 
+void opencvWorker::connectCamera()
+{
+    connectionAttempts++;
+
+    /* Define the format for the camera to use */
+    camera = new cv::VideoCapture(webcamName);
+    camera->set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('U', 'Y', 'V', 'Y'));
+    camera->open(webcamName);
+
+    if (!camera->isOpened()) {
+        qWarning("Cannot open the camera");
+        webcamOpened = false;
+    } else {
+        webcamOpened = true;
+    }
+
+    camera->set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+    camera->set(cv::CAP_PROP_FRAME_HEIGHT, 960);
+
+    if (!usingMipi) {
+        camera->set(cv::CAP_PROP_FPS, 10);
+        camera->set(cv::CAP_PROP_BUFFERSIZE, 1);
+    }
+
+    checkCamera();
+}
+
+void opencvWorker::checkCamera()
+{
+    /* Check to see if camera can retrieve a frame*/
+    *camera >> picture;
+
+    if (picture.empty()) {
+        qWarning("Lost connection to camera, reconnecting");
+        camera->release();
+
+        if (connectionAttempts < 3) {
+            connectCamera();
+        } else {
+            qWarning() << "Could not retrieve a frame, attempts: " << connectionAttempts;
+            webcamInitialised = false;
+        }
+    }
+}
+
 opencvWorker::~opencvWorker() {
     camera->release();
 }
@@ -166,4 +197,9 @@ bool opencvWorker::getUsingMipi()
 bool opencvWorker::cameraInit()
 {
     return webcamInitialised;
+}
+
+bool opencvWorker::getCameraOpen()
+{
+    return  webcamOpened;
 }

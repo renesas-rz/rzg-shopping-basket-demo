@@ -38,15 +38,20 @@ public:
     ~opencvWorker();
     cv::Mat* getImage(unsigned int iterations);
     bool cameraInit();
+    bool getCameraOpen();
     bool getUsingMipi();
 
 private:
     int runCommand(std::string command, std::string &stdoutput);
     void setupCamera();
+    void connectCamera();
+    void checkCamera();
 
     std::unique_ptr<cv::VideoCapture> videoCapture;
     bool webcamInitialised;
+    bool webcamOpened;
     bool usingMipi;
+    int connectionAttempts;
     std::string webcamName;
     cv::Mat picture;
     cv::VideoCapture *camera;
