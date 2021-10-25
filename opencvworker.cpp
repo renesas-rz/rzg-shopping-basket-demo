@@ -31,6 +31,7 @@
 
 opencvWorker::opencvWorker(QString cameraLocation)
 {
+    int cameraHeight;
     webcamName = cameraLocation.toStdString();
     connectionAttempts = 0;
 
@@ -42,6 +43,8 @@ opencvWorker::opencvWorker(QString cameraLocation)
         /* We need to run this command only once */
         if (runCommand(cameraInitialization, stdoutput))
             qWarning("Cannot initialize the camera");
+
+        cameraHeight = 960;
     }
 
     connectCamera();
