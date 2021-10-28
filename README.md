@@ -5,8 +5,9 @@ This repository contains the code required to build the application demo. This d
 ## Manual Build Instructions
 ### RZ/G2
 1. Have a suitable cross toolchain by building `bitbake core-image-qt-sdk -c populate_sdk`
-with yocto meta layers described in [meta-rzg2](https://github.com/renesas-rz/meta-rzg2)
-and [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) (copy `.conf` files from meta-tensorfow-lite).
+with yocto meta layers described in: [meta-rzg2](https://github.com/renesas-rz/meta-rzg2), [meta-renesas-ai](https://github.com/renesas-rz/meta-renesas-ai) and [meta-renesas-ai-demos](https://github.com/renesas-rz/meta-renesas-ai-demos) (copy `.conf` files from meta-shopping-basket-demo/templates).  
+Note that for the RZ/G2L the [SDK patch](https://github.com/renesas-rz/meta-renesas-ai-demos/blob/master/patches/meta-rzg2/dunfell-rzg2l/0001-Enable-RZ-G2L-Qt-SDK-builds.patch) should be applied to
+meta-rzg2 before building the SDK.
 2. Install cross toolchain with `sudo sh ./poky-glibc-x86_64-core-image-qt-sdk-aarch64-toolchain-<SDK Version>.sh`.
 3. Set up environment variables with `source /<SDK location>/environment-setup-aarch64-poky-linux`.
 4. Run `qmake`.
