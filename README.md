@@ -13,7 +13,7 @@ meta-rzg2 before building the SDK.
 4. Run `qmake`.
 5. Run `make`.
 6. Copy `shoppingbasket_demo_app` to the root filesystem.
-7. Copy `shoppingBasketDemo.tflite` to `/opt/Shopping_Basket_Demo`.
+7. Copy `shoppingBasketDemo.tflite` to `/opt/shopping-basket-demo`.
 8. Run the app with `./shoppingbasket_demo_app`.
 
 ### Ubuntu
@@ -49,14 +49,15 @@ meta-rzg2 before building the SDK.
     sudo cp -r tensorflow/lite/tools/make/downloads/flatbuffers/include/flatbuffers /usr/local/include
     ```
 
-4. Copy [shoppingBasketDemo.tflite](https://github.com/renesas-rz/meta-renesas-ai-demos/blob/master/meta-shopping-basket-demo/recipes-ai/shopping-basket-demo/files/shoppingBasketDemo.tflite) to `/opt/Shopping_Basket_Demo`
+4. Copy [shoppingBasketDemo.tflite](https://github.com/renesas-rz/meta-renesas-ai-demos/blob/master/meta-shopping-basket-demo/recipes-ai/shopping-basket-demo/files/shoppingBasketDemo.tflite) to `/opt/shopping-basket-demo`
     ```
-    sudo mkdir /opt/Shopping_Basket_Demo
-    cd /opt/Shopping_Basket_Demo
+    sudo mkdir /opt/shopping-basket-demo
+    cd /opt/shopping-basket-demo
     sudo wget https://github.com/renesas-rz/meta-renesas-ai-demos/raw/master/meta-shopping-basket-demo/recipes-ai/shopping-basket-demo/files/shoppingBasketDemo.tflite
     ```
 
 5. Exclude ArmNN incompatible code
+
    As ArmNN is not supported for X86 machines, remove the ArmNN code by uncommenting
    the line below from shoppingbasket_demo_app.pro:
    ```
@@ -68,7 +69,7 @@ meta-rzg2 before building the SDK.
     cd rzg-shopping-basket-demo
     qmake
     make -j$(nproc)
-    sudo cp shoppingbasket_demo_app /opt/Shopping_Basket_Demo
+    sudo cp shoppingbasket_demo_app /opt/shopping-basket-demo
     ```
 
-7. Run the demo with `/opt/Shopping_Basket_Demo/shoppingbasket_demo_app`
+7. Run the demo with `/opt/shopping-basket-demo/shoppingbasket_demo_app`
