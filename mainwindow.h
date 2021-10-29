@@ -87,7 +87,6 @@ private slots:
 
 private:
     void drawBoxes();
-    void drawFPS(qint64 timeElapsed);
     void drawMatToView(const cv::Mat& matInput);
     void createTfWorker();
     QImage matToQImage(const cv::Mat& matToConvert);
