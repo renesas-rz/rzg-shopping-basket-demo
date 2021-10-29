@@ -94,6 +94,7 @@ private:
     void createVideoWorker();
     void setProcessButton(bool enable);
     void setNextButton(bool enable);
+    void errorPopup(QString errorMessage, int errorCode);
 
     Ui::MainWindow *ui;
     bool useArmNNDelegate;

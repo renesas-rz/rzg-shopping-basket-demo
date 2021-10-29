@@ -108,20 +108,10 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
 
     if (cvWorker->cameraInit() == false) {
         qWarning("Camera not initialising. Quitting.");
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, "Error", TEXT_CAMERA_INIT_STATUS_ERROR,
-                                     QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
-        msgBox->exec();
-
-        /* Force application quit as it can't be used without a camera */
-        exit(EXIT_CAMERA_INIT_ERROR);
+        errorPopup(TEXT_CAMERA_INIT_STATUS_ERROR, EXIT_CAMERA_INIT_ERROR);
     } else if (cvWorker->getCameraOpen() == false) {
         qWarning("Camera not opening. Quitting.");
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, "Error", TEXT_CAMERA_OPENING_ERROR,
-                                     QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
-        msgBox->exec();
-
-        /* Force application quit as it can't be used without a camera */
-        exit(EXIT_CAMERA_STOPPED_ERROR);
+        errorPopup(TEXT_CAMERA_OPENING_ERROR, EXIT_CAMERA_STOPPED_ERROR);
     } else {
         createVideoWorker();
         createTfWorker();
@@ -265,13 +255,7 @@ void MainWindow::ShowVideo()
         setProcessButton(false);
 
         qWarning("Camera no longer working. Quitting.");
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, "Error", TEXT_CAMERA_FAILURE_ERROR,
-                                     QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
-
-        msgBox->exec();
-
-        /* Force application quit as it can't be used without a camera */
-        exit(EXIT_CAMERA_STOPPED_ERROR);
+        errorPopup(TEXT_CAMERA_FAILURE_ERROR, EXIT_CAMERA_STOPPED_ERROR);
     } else {
         drawMatToView(*image);
     }
@@ -298,13 +282,7 @@ void MainWindow::on_pushButtonProcessBasket_clicked()
         setNextButton(false);
 
         qWarning("Camera not working. Quitting.");
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, "Error", TEXT_CAMERA_FAILURE_ERROR,
-                                     QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
-
-        msgBox->exec();
-
-        /* Force application quit as it can't be used without a camera */
-        exit(EXIT_CAMERA_STOPPED_ERROR);
+        errorPopup(TEXT_CAMERA_FAILURE_ERROR, EXIT_CAMERA_STOPPED_ERROR);
     } else {
         outputTensor.clear();
         ui->tableWidget->setRowCount(0);
@@ -411,6 +389,15 @@ void MainWindow::on_actionEnable_ArmNN_Delegate_triggered()
 
     delete tfWorker;
     createTfWorker();
+}
+
+void MainWindow::errorPopup(QString errorMessage, int errorCode)
+{
+    QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, "Error", errorMessage,
+                                 QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+    msgBox->exec();
+
+    exit(errorCode);
 }
 
 void MainWindow::on_actionExit_triggered()
