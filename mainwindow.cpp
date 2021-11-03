@@ -43,8 +43,8 @@ const std::vector<float> MainWindow::costs = {float(0.85), float(0.82),
                                               float(1.20), float(0.69)};
 
 MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLocation)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow)
 {
     modelPath = modelLocation;
     useArmNNDelegate = true;
@@ -184,7 +184,7 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
         ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 0, item);
         ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1,
         price = new QTableWidgetItem("£" + QString::number(
-        double(costs[labelList.indexOf(labelListSorted.at(i))]), 'f', 2)));
+                double(costs[labelList.indexOf(labelListSorted.at(i))]), 'f', 2)));
         price->setTextAlignment(Qt::AlignRight);
     }
 
@@ -199,9 +199,8 @@ void MainWindow::receiveOutputTensor(const QVector<float>& receivedTensor, int r
     item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, 1, item);
 
-    if (!ui->pushButtonProcessBasket->isEnabled()) {
+    if (!ui->pushButtonProcessBasket->isEnabled())
         drawMatToView(receivedMat);
-    }
 
     drawBoxes();
 }
@@ -309,8 +308,8 @@ void MainWindow::on_actionLicense_triggered()
                              "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "
                              "GNU General Public License for more details.\n\n"
                              "You should have received a copy of the GNU General Public License "
-                             "along with the RZG Shopping Basket Demo. If not, see https://www.gnu.org/licenses."
-                             , QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+                             "along with the RZG Shopping Basket Demo. If not, see https://www.gnu.org/licenses.",
+                             QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
     msgBox->setFont(font);
     msgBox->show();
 }
@@ -325,8 +324,7 @@ void MainWindow::on_actionHardware_triggered()
 
 void MainWindow::setProcessButton(bool enable)
 {
-    if (enable)
-    {
+    if (enable) {
         ui->pushButtonProcessBasket->setStyleSheet(BUTTON_BLUE);
         ui->pushButtonProcessBasket->setEnabled(true);
     } else {
@@ -339,8 +337,7 @@ void MainWindow::setProcessButton(bool enable)
 
 void MainWindow::setNextButton(bool enable)
 {
-    if (enable)
-    {
+    if (enable) {
         ui->pushButtonNextBasket->setStyleSheet(BUTTON_BLUE);
         ui->pushButtonNextBasket->setEnabled(true);
     } else {
