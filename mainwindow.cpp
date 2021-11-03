@@ -71,6 +71,10 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     ui->labelInference->setText(TEXT_INFERENCE);
     ui->labelTotalItems->setText(TEXT_TOTAL_ITEMS);
 
+    QPixmap rzLogo;
+    rzLogo.load("/opt/shopping-basket-demo/logos/renesas-rz-logo.png");
+    ui->labelRzLogo->setPixmap(rzLogo);
+
     setProcessButton(true);
     setNextButton(false);
 
