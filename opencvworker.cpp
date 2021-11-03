@@ -31,7 +31,6 @@
 
 opencvWorker::opencvWorker(QString cameraLocation)
 {
-    int cameraHeight;
     webcamName = cameraLocation.toStdString();
     connectionAttempts = 0;
 
@@ -43,8 +42,6 @@ opencvWorker::opencvWorker(QString cameraLocation)
         /* We need to run this command only once */
         if (runCommand(cameraInitialization, stdoutput))
             qWarning("Cannot initialize the camera");
-
-        cameraHeight = 960;
     }
 
     connectCamera();
@@ -129,6 +126,7 @@ void opencvWorker::setupCamera()
 void opencvWorker::connectCamera()
 {
     connectionAttempts++;
+    int cameraHeight = 960;
 
     /* Define the format for the camera to use */
     camera = new cv::VideoCapture(webcamName);
@@ -142,13 +140,14 @@ void opencvWorker::connectCamera()
         webcamOpened = true;
     }
 
-    camera->set(cv::CAP_PROP_FRAME_WIDTH, 1280);
-    camera->set(cv::CAP_PROP_FRAME_HEIGHT, 960);
-
     if (!usingMipi) {
         camera->set(cv::CAP_PROP_FPS, 10);
         camera->set(cv::CAP_PROP_BUFFERSIZE, 1);
+        cameraHeight = 720;
     }
+
+    camera->set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+    camera->set(cv::CAP_PROP_FRAME_HEIGHT, cameraHeight);
 
     checkCamera();
 }
