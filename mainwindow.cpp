@@ -58,7 +58,6 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    QFont font;
     font.setPointSize(14);
     ui->tableWidget->setHorizontalHeaderLabels({"Item", "Price"});
     ui->tableWidget->horizontalHeader()->setFont(font);
@@ -312,6 +311,7 @@ void MainWindow::on_actionLicense_triggered()
                              "You should have received a copy of the GNU General Public License "
                              "along with the RZG Shopping Basket Demo. If not, see https://www.gnu.org/licenses."
                              , QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+    msgBox->setFont(font);
     msgBox->show();
 }
 
@@ -319,6 +319,7 @@ void MainWindow::on_actionHardware_triggered()
 {
     QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, "Information", boardInfo,
                                  QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+    msgBox->setFont(font);
     msgBox->show();
 }
 
@@ -399,6 +400,7 @@ void MainWindow::errorPopup(QString errorMessage, int errorCode)
 {
     QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, "Error", errorMessage,
                                  QMessageBox::NoButton, this, Qt::Dialog | Qt::FramelessWindowHint);
+    msgBox->setFont(font);
     msgBox->exec();
 
     exit(errorCode);

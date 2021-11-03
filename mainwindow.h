@@ -97,6 +97,7 @@ private:
 
     Ui::MainWindow *ui;
     bool useArmNNDelegate;
+    QFont font;
     QPixmap image;
     QGraphicsScene *scene;
     QVector<float> outputTensor;
