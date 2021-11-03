@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     : QMainWindow(parent),
       ui(new Ui::MainWindow)
 {
+    Board board = Unknown;
+
     modelPath = modelLocation;
     useArmNNDelegate = true;
 
@@ -84,6 +86,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     if (systemInfo.machineHostName() == "hihope-rzg2m") {
         setWindowTitle("Shopping Basket Demo - RZ/G2M");
         boardInfo = G2M_HW_INFO;
+        board = G2M;
 
         if (cameraLocation.isEmpty() && QDir("/dev/v4l/by-id").exists())
             cameraLocation = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
@@ -91,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     } else if (systemInfo.machineHostName() == "smarc-rzg2l") {
         setWindowTitle("Shopping Basket Demo - RZ/G2L");
         boardInfo = G2L_HW_INFO;
+        board = G2L;
 
         if (cameraLocation.isEmpty())
             cameraLocation = QString("/dev/video0");
@@ -98,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     } else if (systemInfo.machineHostName() == "ek874") {
         setWindowTitle("Shopping Basket Demo - RZ/G2E");
         boardInfo = G2E_HW_INFO;
+        board = G2E;
 
         if (cameraLocation.isEmpty())
             cameraLocation = QString("/dev/video0");
@@ -107,7 +112,7 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
     }
 
     qRegisterMetaType<cv::Mat>();
-    cvWorker = new opencvWorker(cameraLocation);
+    cvWorker = new opencvWorker(cameraLocation, board);
 
     if (cvWorker->cameraInit() == false) {
         qWarning("Camera not initialising. Quitting.");

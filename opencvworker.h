@@ -19,6 +19,9 @@
 #ifndef OPENCVCAPTUREWORKER_H
 #define OPENCVCAPTUREWORKER_H
 
+#define G2L_CAM_INIT "media-ctl -d /dev/media0 --reset && media-ctl -d /dev/media0 -l \"'rzg2l_csi2 10830400.csi2':1->'CRU output':0 [1]\" && media-ctl -d /dev/media0 -V \"'rzg2l_csi2 10830400.csi2':1 [fmt:UYVY8_2X8/1280x960 field:none]\" && media-ctl -d /dev/media0 -V \"'ov5645 0-003c':0 [fmt:UYVY8_2X8/1280x960 field:none]\""
+#define G2M_CAM_INIT "media-ctl -d /dev/media0 -r && media-ctl -d /dev/media0 -l \"'rcar_csi2 fea80000.csi2':1->'VIN0 output':0 [1]\" && media-ctl -d /dev/media0 -V \"'rcar_csi2 fea80000.csi2':1 [fmt:UYVY8_2X8/1280x960 field:none]\" && media-ctl -d /dev/media0 -V \"'ov5645 2-003c':0 [fmt:UYVY8_2X8/1280x960 field:none]\""
+
 #include <opencv2/core.hpp>
 #include <opencv2/videoio.hpp>
 
@@ -29,12 +32,14 @@
 
 Q_DECLARE_METATYPE(cv::Mat)
 
+enum Board { G2E, G2L, G2M, Unknown };
+
 class opencvWorker : public QObject
 {
     Q_OBJECT
 
 public:
-    opencvWorker(QString cameraLocation);
+    opencvWorker(QString cameraLocation, Board board);
     ~opencvWorker();
     cv::Mat* getImage(unsigned int iterations);
     bool cameraInit();
@@ -55,7 +60,7 @@ private:
     std::string webcamName;
     cv::Mat picture;
     cv::VideoCapture *camera;
-    std::string cameraInitialization = "media-ctl -d /dev/media0 --reset && media-ctl -d /dev/media0 -l \"'rzg2l_csi2 10830400.csi2':1->'CRU output':0 [1]\" && media-ctl -d /dev/media0 -V \"'rzg2l_csi2 10830400.csi2':1 [fmt:UYVY8_2X8/1280x960 field:none]\" && media-ctl -d /dev/media0 -V \"'ov5645 0-003c':0 [fmt:UYVY8_2X8/1280x960 field:none]\"";
+    std::string cameraInitialization;
 };
 
 #endif // OPENCVCAPTUREWORKER_H

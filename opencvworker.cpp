@@ -29,7 +29,7 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 
-opencvWorker::opencvWorker(QString cameraLocation)
+opencvWorker::opencvWorker(QString cameraLocation, Board board)
 {
     webcamName = cameraLocation.toStdString();
     connectionAttempts = 0;
@@ -38,6 +38,11 @@ opencvWorker::opencvWorker(QString cameraLocation)
 
     if (usingMipi) {
         std::string stdoutput;
+
+        if (board == G2M)
+            cameraInitialization = G2M_CAM_INIT;
+        else if (board == G2L)
+            cameraInitialization = G2L_CAM_INIT;
 
         /* We need to run this command only once */
         if (runCommand(cameraInitialization, stdoutput))
