@@ -101,6 +101,14 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
         if (cameraLocation.isEmpty())
             cameraLocation = QString("/dev/video0");
 
+    } else if (systemInfo.machineHostName() == "smarc-rzg2lc") {
+        setWindowTitle("Shopping Basket Demo - RZ/G2LC");
+        boardInfo = G2LC_HW_INFO;
+        board = G2L;
+
+        if (cameraLocation.isEmpty())
+            cameraLocation = QString("/dev/video0");
+
     } else if (systemInfo.machineHostName() == "ek874") {
         setWindowTitle("Shopping Basket Demo - RZ/G2E");
         boardInfo = G2E_HW_INFO;
