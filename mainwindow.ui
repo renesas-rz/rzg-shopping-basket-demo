@@ -167,8 +167,8 @@ Basket</string>
      <rect>
       <x>130</x>
       <y>10</y>
-      <width>800</width>
-      <height>600</height>
+      <width>802</width>
+      <height>602</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -179,8 +179,8 @@ Basket</string>
     </property>
     <property name="minimumSize">
      <size>
-      <width>800</width>
-      <height>600</height>
+      <width>802</width>
+      <height>602</height>
      </size>
     </property>
     <property name="sizeAdjustPolicy">

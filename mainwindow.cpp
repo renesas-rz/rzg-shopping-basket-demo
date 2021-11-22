@@ -373,7 +373,10 @@ void MainWindow::drawMatToView(const cv::Mat& matInput)
 
     image = QPixmap::fromImage(imageToDraw);
     scene->clear();
-    image = image.scaled(ui->graphicsView->width() - GRAPHICS_VIEW_EXCESS_SPACE, ui->graphicsView->height() - GRAPHICS_VIEW_EXCESS_SPACE);
+
+    if (!cvWorker->getUsingMipi())
+        image = image.scaled(800, 600);
+
     scene->addPixmap(image);
     scene->setSceneRect(image.rect());
 }

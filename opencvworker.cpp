@@ -127,7 +127,8 @@ void opencvWorker::setupCamera()
 void opencvWorker::connectCamera()
 {
     connectionAttempts++;
-    int cameraHeight = 960;
+    int cameraWidth = 800;
+    int cameraHeight = 600;
 
     if (usingMipi) {
         std::string stdoutput;
@@ -152,10 +153,11 @@ void opencvWorker::connectCamera()
     if (!usingMipi) {
         camera->set(cv::CAP_PROP_FPS, 10);
         camera->set(cv::CAP_PROP_BUFFERSIZE, 1);
+        cameraWidth = 1280;
         cameraHeight = 720;
     }
 
-    camera->set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+    camera->set(cv::CAP_PROP_FRAME_WIDTH, cameraWidth);
     camera->set(cv::CAP_PROP_FRAME_HEIGHT, cameraHeight);
 
     checkCamera();
