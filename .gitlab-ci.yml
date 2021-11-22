@@ -33,3 +33,7 @@ ek874_shopping-basket:
 smarc-rzg2l_shopping-basket:
   image: gitlab.renesas.solutions:5050/spl2/continuous-integration/dockerfiles:ubuntu-20.04-latest
   extends: .app-build
+
+smarc-rzg2lc_shopping-basket:
+  image: gitlab.renesas.solutions:5050/spl2/continuous-integration/dockerfiles:ubuntu-20.04-latest
+  extends: .app-build
