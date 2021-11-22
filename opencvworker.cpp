@@ -37,18 +37,12 @@ opencvWorker::opencvWorker(QString cameraLocation, Board board)
     setupCamera();
 
     if (usingMipi) {
-        std::string stdoutput;
-
         if (board == G2M)
             cameraInitialization = G2M_CAM_INIT;
         else if (board == G2E)
             cameraInitialization = G2E_CAM_INIT;
         else if (board == G2L)
             cameraInitialization = G2L_CAM_INIT;
-
-        /* We need to run this command only once */
-        if (runCommand(cameraInitialization, stdoutput))
-            qWarning("Cannot initialize the camera");
     }
 
     connectCamera();
@@ -134,6 +128,14 @@ void opencvWorker::connectCamera()
 {
     connectionAttempts++;
     int cameraHeight = 960;
+
+    if (usingMipi) {
+        std::string stdoutput;
+
+        /* Run media-ctl command */
+        if (runCommand(cameraInitialization, stdoutput))
+            qWarning("Cannot initialize the camera");
+    }
 
     /* Define the format for the camera to use */
     camera = new cv::VideoCapture(webcamName);
