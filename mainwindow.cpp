@@ -154,6 +154,11 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
         if (cvWorker->getUsingMipi())
             vidWorker->setDelayMS(MIPI_VIDEO_DELAY);
 
+        /* If a Mipi camera is not in use then hide the menu that
+         * is only supported for the OV5645 */
+        if (!cvWorker->getUsingMipi())
+            ui->menuCam_Settings->menuAction()->setVisible(false);
+
         start_video();
     }
 }
@@ -439,4 +444,34 @@ void MainWindow::errorPopup(QString errorMessage, int errorCode)
 void MainWindow::on_actionExit_triggered()
 {
     QApplication::quit();
+}
+
+void MainWindow::on_actionAuto_White_Balance_triggered()
+{
+    if (ui->actionAuto_White_Balance->text().contains("Disable"))
+        ui->actionAuto_White_Balance->setText("Enable Auto White Balance");
+    else
+        ui->actionAuto_White_Balance->setText("Disable Auto White Balance");
+
+    cvWorker->toggleWhitebalanceAuto();
+}
+
+void MainWindow::on_actionAuto_Exposure_triggered()
+{
+    if (ui->actionAuto_Exposure->text().contains("Disable"))
+        ui->actionAuto_Exposure->setText("Enable Auto Exposure");
+    else
+        ui->actionAuto_Exposure->setText("Disable Auto Exposure");
+
+    cvWorker->toggleExpose();
+}
+
+void MainWindow::on_actionAuto_Gain_triggered()
+{
+    if (ui->actionAuto_Gain->text().contains("Disable"))
+        ui->actionAuto_Gain->setText("Enable Auto Gain");
+    else
+        ui->actionAuto_Gain->setText("Disable Auto Gain");
+
+    cvWorker->toggleGain();
 }

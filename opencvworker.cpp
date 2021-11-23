@@ -21,7 +21,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/videodev2.h>
-#include <linux/v4l2-controls.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -46,6 +45,18 @@ opencvWorker::opencvWorker(QString cameraLocation, Board board)
     }
 
     connectCamera();
+
+    /* These settings are inverted by calls to the toggle slots below,
+     * ensuring we have a suitable set of defaults for the sensor */
+    autoWhiteBalance = false;
+    autoGain = false;
+    autoExpose = V4L2_EXPOSURE_MANUAL;
+
+    if (usingMipi) {
+        toggleWhitebalanceAuto();
+        toggleGain();
+        toggleExpose();
+    }
 }
 
 int opencvWorker::runCommand(std::string command, std::string &stdoutput)
@@ -108,20 +119,50 @@ void opencvWorker::setupCamera()
         }
     }
     close(fd);
+}
+
+void opencvWorker::setControl(__u32 id, __s32 value)
+{
 
     if (usingMipi) {
         struct v4l2_control control;
-        fd = open("/dev/v4l-subdev1", O_RDWR);
+        int fd = open("/dev/v4l-subdev1", O_RDWR);
 
-        memset (&control, 0, sizeof(control));
-        control.id = V4L2_CID_AUTOGAIN;
-        control.value = true;
+        if (fd <= 0) {
+            qWarning("Warning: Failed to open node (/dev/v4l-subdev1)");
+            return;
+        }
+
+        control.id = id;
+        control.value = value;
 
         if (ioctl(fd, VIDIOC_S_CTRL, &control) == -1)
             qWarning() << "VIDIOC_S_CTRL, errno:" << errno;
 
         close(fd);
     }
+}
+
+void opencvWorker::toggleWhitebalanceAuto()
+{
+    autoWhiteBalance = !autoWhiteBalance;
+    setControl(V4L2_CID_AUTO_WHITE_BALANCE, autoWhiteBalance);
+}
+
+void opencvWorker::toggleGain()
+{
+    autoGain = !autoGain;
+    setControl(V4L2_CID_AUTOGAIN, autoGain);
+}
+
+void opencvWorker::toggleExpose()
+{
+    if (autoExpose == V4L2_EXPOSURE_MANUAL)
+        autoExpose = V4L2_EXPOSURE_AUTO;
+    else
+        autoExpose = V4L2_EXPOSURE_MANUAL;
+
+    setControl(V4L2_CID_EXPOSURE_AUTO, autoExpose);
 }
 
 void opencvWorker::connectCamera()

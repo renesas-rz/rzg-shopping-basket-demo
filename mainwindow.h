@@ -85,6 +85,9 @@ private slots:
     void on_actionExit_triggered();
     void start_video();
     void stop_video();
+    void on_actionAuto_White_Balance_triggered();
+    void on_actionAuto_Exposure_triggered();
+    void on_actionAuto_Gain_triggered();
 
 private:
     void drawBoxes();
