@@ -20,6 +20,7 @@
 #include <QGraphicsTextItem>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QSplashScreen>
 #include <QSysInfo>
 
 #include <opencv2/imgproc/imgproc.hpp>
@@ -47,6 +48,16 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
       ui(new Ui::MainWindow)
 {
     Board board = Unknown;
+
+    QPixmap splashScreenImage("/opt/shopping-basket-demo/logos/rz-splashscreen.png");
+
+    QSplashScreen *splashScreen = new QSplashScreen(splashScreenImage);
+    splashScreen->setAttribute(Qt::WA_DeleteOnClose, true);
+    splashScreen->show();
+    splashScreen->showMessage("Loading the \nRZG Shopping Basket Demo", Qt::AlignCenter, Qt::blue);
+    qApp->processEvents();
+    font.setPointSize(18);
+    splashScreen->setFont(font);
 
     modelPath = modelLocation;
     useArmNNDelegate = true;
@@ -125,6 +136,8 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
 
     qRegisterMetaType<cv::Mat>();
     cvWorker = new opencvWorker(cameraLocation, board);
+
+    splashScreen->close();
 
     if (cvWorker->cameraInit() == false) {
         qWarning("Camera not initialising. Quitting.");
