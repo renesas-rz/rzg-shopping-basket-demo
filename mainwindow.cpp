@@ -99,10 +99,12 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
         boardInfo = G2M_HW_INFO;
         board = G2M;
 
-        if (cameraLocation.isEmpty() && QDir("/dev/v4l/by-id").exists())
-            cameraLocation = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
-        else
-            cameraLocation = QString("/dev/video0");
+        if (cameraLocation.isEmpty()) {
+            if(QDir("/dev/v4l/by-id").exists())
+                cameraLocation = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
+            else
+                cameraLocation = QString("/dev/video0");
+        }
 
     } else if (systemInfo.machineHostName() == "smarc-rzg2l") {
         setWindowTitle("Shopping Basket Demo - RZ/G2L");
@@ -125,10 +127,12 @@ MainWindow::MainWindow(QWidget *parent, QString cameraLocation, QString modelLoc
         boardInfo = G2E_HW_INFO;
         board = G2E;
 
-        if (cameraLocation.isEmpty() && QDir("/dev/v4l/by-id").exists())
-            cameraLocation = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
-        else
-            cameraLocation = QString("/dev/video0");
+        if (cameraLocation.isEmpty()) {
+            if(QDir("/dev/v4l/by-id").exists())
+                cameraLocation = QDir("/dev/v4l/by-id").entryInfoList(QDir::NoDotAndDotDot).at(0).absoluteFilePath();
+            else
+                cameraLocation = QString("/dev/video0");
+        }
     } else {
         setWindowTitle("Shopping Basket Demo");
         boardInfo = HW_INFO_WARNING;
